@@ -63,6 +63,16 @@ public class JwtServiceImpl implements JwtService {
 	}
 	
 	@Override
+	public Boolean getIsExpertFromToken(String token) throws ParseException, JOSEException {
+		Boolean isExpert = null;
+
+		JWTClaimsSet claims = getClaimsFromToken(token);
+		isExpert = claims.getBooleanClaim(ISEXPERT);
+
+		return isExpert;
+	}
+	
+	@Override
 	public boolean isExpertFromToken(String token) throws ParseException, JOSEException {
 		boolean isExpert = false;
 

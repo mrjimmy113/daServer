@@ -13,4 +13,6 @@ public interface JwtService {
 	String generateAuthToken(String email, boolean isExpert) throws JOSEException;
 
 	boolean isExpertFromToken(String token) throws ParseException, JOSEException;
+
+	Boolean getIsExpertFromToken(String token) throws ParseException, JOSEException;
 }

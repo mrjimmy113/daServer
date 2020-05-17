@@ -1,5 +1,7 @@
 package com.quang.da.controller;
 
+import java.sql.Date;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.quang.da.dto.CustomerProfileDTO;
 import com.quang.da.dto.ExpertProfileDTO;
-import com.quang.da.dto.LoginDTO;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
 import com.quang.da.service.AccountService;
+import com.quang.da.service.customResult.CheckTokenResult;
 
 @RestController
 @RequestMapping("/account")
@@ -26,13 +28,14 @@ public class AccountController {
 	@Autowired
 	private AccountService service;
 	
+	
 	@PostMapping(value = "/login")
-	public ResponseEntity<String> login(@RequestBody LoginDTO infor) {
+	public ResponseEntity<String> login(@RequestParam("email") String email, @RequestParam("password") String password) {
 		HttpStatus status = null;
 		String result = "";
 		try {
-			
-			result = service.login(infor.getEmail(),infor.getPassword(), infor.isExpert());
+
+			result = service.login(email, password);
 			status = HttpStatus.OK;
 
 		} catch (Exception e) {
@@ -41,6 +44,27 @@ public class AccountController {
 
 		}
 		return new ResponseEntity<String>(result, status);
+	}
+	
+	@PostMapping(value = "check")
+	public ResponseEntity<Boolean> checkToken(@RequestParam("token") String token) {
+		HttpStatus status = null;
+		Boolean result = null;
+		try {
+			CheckTokenResult res = service.checkToken(token);
+			if(res.isValid()) {
+				status = HttpStatus.OK;
+			}else {
+				status = HttpStatus.ACCEPTED;
+			}
+			
+			result = res.isExpert();
+			
+		} catch (Exception e) {
+			status = HttpStatus.BAD_REQUEST;
+			e.printStackTrace();
+		}
+		return new ResponseEntity<Boolean>(result,status);
 	}
 	
 	@PostMapping(value = "/changePassword")
@@ -68,6 +92,7 @@ public class AccountController {
 	public ResponseEntity<CustomerProfileDTO> profileCustomer() {
 		HttpStatus status = null;
 		CustomerProfileDTO dto = null;
+		
 		try {
 			dto = new CustomerProfileDTO();
 			BeanUtils.copyProperties(service.getProfileCustomer(),dto);
@@ -86,10 +111,11 @@ public class AccountController {
 	@PostMapping(value = "/cus")
 	public ResponseEntity<Number> registerCustomer(@RequestBody CustomerProfileDTO infor) {
 		HttpStatus status = null;
-
+		System.out.print("CLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLl");
 		try {
 			Customer entity = new Customer();
 			BeanUtils.copyProperties(infor, entity);
+			entity.setDob(Date.valueOf(infor.getDob()));
 			boolean res = service.register(entity);
 
 			if (res) {

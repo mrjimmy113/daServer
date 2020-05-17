@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import com.nimbusds.jose.JOSEException;
 import com.quang.da.service.JwtService;
 
-
 @Component
 public class SecurityFilter extends UsernamePasswordAuthenticationFilter {
 	private final static String TOKEN_HEADER = "authorization";
@@ -32,7 +31,7 @@ public class SecurityFilter extends UsernamePasswordAuthenticationFilter {
 
 	@Autowired
 	private UserDetailsService ser;
-	
+
 	@Autowired
 	@Override
 	public void setAuthenticationManager(AuthenticationManager authenticationManager) {
@@ -44,20 +43,29 @@ public class SecurityFilter extends UsernamePasswordAuthenticationFilter {
 			throws IOException, ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest) req;
 		String authToken = httpRequest.getHeader(TOKEN_HEADER);
-		/*
-		 * if (authToken != null) { try { if (jwt.validateTokenEmail(authToken)) {
-		 * String email = jwt.getEmailFromToken(authToken); UserDetails userDetails =
-		 * ser.loadUserByUsername(email); if (userDetails != null) {
-		 * UsernamePasswordAuthenticationToken authenticationToken = new
-		 * UsernamePasswordAuthenticationToken( userDetails, null,
-		 * userDetails.getAuthorities()); authenticationToken.setDetails(new
-		 * WebAuthenticationDetailsSource().buildDetails(httpRequest));
-		 * SecurityContextHolder.getContext().setAuthentication(authenticationToken); }
-		 * } } catch (UsernameNotFoundException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } catch (java.text.ParseException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } catch (JOSEException e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } }
-		 */
+		if (authToken != null) {
+			try {
+				if (jwt.validateTokenEmail(authToken)) {
+					String email = jwt.getEmailFromToken(authToken);
+					UserDetails userDetails = ser.loadUserByUsername(email);
+					if (userDetails != null) {
+						UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+								userDetails, null, userDetails.getAuthorities());
+						authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+						SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+					}
+				}
+			} catch (UsernameNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (java.text.ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JOSEException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		chain.doFilter(req, res);
 	}
 }

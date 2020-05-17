@@ -1,12 +1,15 @@
 package com.quang.da.service;
 
+import java.text.ParseException;
+
 import com.nimbusds.jose.JOSEException;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
+import com.quang.da.service.customResult.CheckTokenResult;
 
 public interface AccountService {
 
-	String login(String email, String password, boolean isExpert) throws JOSEException;
+
 
 	boolean register(Customer entity);
 
@@ -21,4 +24,8 @@ public interface AccountService {
 	void updateProfile(Expert infor);
 
 	void updateProfile(Customer infor);
+
+	String login(String email, String password) throws JOSEException;
+
+	CheckTokenResult checkToken(String token) throws ParseException, JOSEException;
 }

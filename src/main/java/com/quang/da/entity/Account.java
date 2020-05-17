@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 @MappedSuperclass
 public class Account {
@@ -29,7 +30,7 @@ public class Account {
     @Column
     private Date createdDate;
     
-    
+    @Transient
     private boolean isExpert;
 
     

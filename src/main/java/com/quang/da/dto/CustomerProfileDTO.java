@@ -18,7 +18,7 @@ public class CustomerProfileDTO {
 
 	private String city;
 
-	private Date dob;
+	private String dob;
 
 	private String primaryLanguage;
 
@@ -66,11 +66,11 @@ public class CustomerProfileDTO {
 		this.city = city;
 	}
 
-	public Date getDob() {
+	public String getDob() {
 		return dob;
 	}
 
-	public void setDob(Date dob) {
+	public void setDob(String dob) {
 		this.dob = dob;
 	}
 
