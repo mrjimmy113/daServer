@@ -69,7 +69,7 @@ public class AccountServiceImpl implements AccountService {
 		if (isExisted)
 			return jwt.generateAuthToken(email,isExpert);
 
-		return "";
+		return "0";
 	}
 	
 	@Override

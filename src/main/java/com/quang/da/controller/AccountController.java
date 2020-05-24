@@ -32,7 +32,7 @@ public class AccountController {
 	@PostMapping(value = "/login")
 	public ResponseEntity<String> login(@RequestParam("email") String email, @RequestParam("password") String password) {
 		HttpStatus status = null;
-		String result = "";
+		String result = null;
 		try {
 
 			result = service.login(email, password);
@@ -111,7 +111,6 @@ public class AccountController {
 	@PostMapping(value = "/cus")
 	public ResponseEntity<Number> registerCustomer(@RequestBody CustomerProfileDTO infor) {
 		HttpStatus status = null;
-		System.out.print("CLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLl");
 		try {
 			Customer entity = new Customer();
 			BeanUtils.copyProperties(infor, entity);
