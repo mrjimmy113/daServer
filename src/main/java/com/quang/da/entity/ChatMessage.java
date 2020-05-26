@@ -1,8 +1,5 @@
 package com.quang.da.entity;
 
-import java.sql.Timestamp;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,19 +19,13 @@ public class ChatMessage {
 	private ProblemRequest request;
 	
 	@ManyToOne
-	@JoinColumn(nullable = false, name = "customerId")
-	private Customer customer;
+	@JoinColumn(nullable = false, name = "cusMesId")
+	private CustomerMessage customer;
 	
 	@ManyToOne
-	@JoinColumn(nullable = false, name = "expertId")
-	private Expert expert;
+	@JoinColumn(nullable = false, name = "expMesId")
+	private ExpertMessage expert;
 	
-	@Column
-	private Timestamp timeCreated;
-	
-	@Column
-	private String message;
-
 	
 	
 	
@@ -42,16 +33,53 @@ public class ChatMessage {
 		super();
 	}
 
-	public ChatMessage(Integer id, ProblemRequest request, Customer customer, Expert expert, Timestamp timeCreated,
-			String message) {
+	
+	
+
+
+	public ChatMessage(Integer id, ProblemRequest request, CustomerMessage customer, ExpertMessage expert) {
 		super();
 		this.id = id;
 		this.request = request;
 		this.customer = customer;
 		this.expert = expert;
-		this.timeCreated = timeCreated;
-		this.message = message;
 	}
+
+
+
+
+
+	public CustomerMessage getCustomer() {
+		return customer;
+	}
+
+
+
+
+
+	public void setCustomer(CustomerMessage customer) {
+		this.customer = customer;
+	}
+
+
+
+
+
+	public ExpertMessage getExpert() {
+		return expert;
+	}
+
+
+
+
+
+	public void setExpert(ExpertMessage expert) {
+		this.expert = expert;
+	}
+
+
+
+
 
 	public Integer getId() {
 		return id;
@@ -69,37 +97,7 @@ public class ChatMessage {
 		this.request = request;
 	}
 
-	public Customer getCustomer() {
-		return customer;
-	}
 
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
-
-	public Expert getExpert() {
-		return expert;
-	}
-
-	public void setExpert(Expert expert) {
-		this.expert = expert;
-	}
-
-	public Timestamp getTimeCreated() {
-		return timeCreated;
-	}
-
-	public void setTimeCreated(Timestamp timeCreated) {
-		this.timeCreated = timeCreated;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
 	
 	
 }

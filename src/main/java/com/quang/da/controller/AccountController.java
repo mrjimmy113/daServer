@@ -13,9 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.quang.da.dto.CustomerProfileDTO;
 import com.quang.da.dto.ExpertProfileDTO;
+import com.quang.da.dto.RegisterDTO;
+import com.quang.da.entity.Account;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
 import com.quang.da.service.AccountService;
@@ -95,9 +100,8 @@ public class AccountController {
 		
 		try {
 			dto = new CustomerProfileDTO();
-			BeanUtils.copyProperties(service.getProfileCustomer(),dto);
-			
-
+			Customer entity = service.getProfileCustomer();
+			BeanUtils.copyProperties(entity,dto);
 			status = HttpStatus.OK;
 
 		} catch (Exception e) {
@@ -109,20 +113,19 @@ public class AccountController {
 	}
 	
 	@PostMapping(value = "/cus")
-	public ResponseEntity<Number> registerCustomer(@RequestBody CustomerProfileDTO infor) {
+	public ResponseEntity<Number> register(@RequestBody RegisterDTO infor) {
 		HttpStatus status = null;
 		try {
-			Customer entity = new Customer();
+			Account entity = new Account();
 			BeanUtils.copyProperties(infor, entity);
-			entity.setDob(Date.valueOf(infor.getDob()));
 			boolean res = service.register(entity);
 
 			if (res) {
-				status = HttpStatus.OK;
+				status = HttpStatus.CREATED;
 			} else {
 				status = HttpStatus.CONFLICT;
 			}
-
+			System.out.println(status.toString());
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
 			e.printStackTrace();
@@ -132,13 +135,19 @@ public class AccountController {
 	}
 	
 	@PutMapping(value = "/cus")
-	public ResponseEntity<Number> updateCustomer(@RequestBody CustomerProfileDTO infor) {
+	public ResponseEntity<Number> updateCustomer(
+			@RequestParam(name = "file", required = false) MultipartFile file
+			,@RequestParam String infor) {
 		HttpStatus status = null;
 
 		try {
+			CustomerProfileDTO dto = new CustomerProfileDTO();
+			Gson gson = new GsonBuilder().create();
+			dto = gson.fromJson(infor, CustomerProfileDTO.class);
 			Customer entity = new Customer();
-			BeanUtils.copyProperties(infor, entity);
-			service.updateProfile(entity);
+			BeanUtils.copyProperties(dto, entity);
+			entity.setDob(new Date(dto.getDob().getTime()));
+			service.updateProfile(file,entity);
 
 			status = HttpStatus.OK;
 
@@ -199,7 +208,7 @@ public class AccountController {
 		try {
 			Expert entity = new Expert();
 			BeanUtils.copyProperties(infor, entity);
-			service.updateProfile(entity);
+			//service.updateProfile(entity);
 
 			status = HttpStatus.OK;
 

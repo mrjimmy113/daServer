@@ -28,9 +28,10 @@ public class Expert extends Account implements Serializable {
 		super();
 	}
 
-	public Expert(Integer id, String email, String password, String firstname, String lastname, Date createdDate,
+	public Expert(Integer id, String email, String password, String firstname, 
+			String lastname, Date createdDate, Status status,
 			String major, float feePerHour, String description) {
-		super(id, email, password, firstname, lastname, createdDate);
+		super(id, email, password, firstname, lastname, createdDate,status);
 		this.major = major;
 		this.feePerHour = feePerHour;
 		this.description = description;

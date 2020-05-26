@@ -1,6 +1,7 @@
 package com.quang.da.dto;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,7 +27,7 @@ public class ProblemRequestDetailDTO {
 	
 	private Date deadlineDate;
 	
-	private List<String> images;
+	private List<String> images = new ArrayList<String>();
 
 	public Integer getRequestId() {
 		return requestId;

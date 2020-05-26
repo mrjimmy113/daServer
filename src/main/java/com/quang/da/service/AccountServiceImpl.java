@@ -1,9 +1,13 @@
 package com.quang.da.service;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Optional;
+import java.util.UUID;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,12 +16,17 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.nimbusds.jose.JOSEException;
+import com.quang.da.entity.Account;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
+import com.quang.da.entity.Status;
+import com.quang.da.enumaration.StatusEnum;
 import com.quang.da.repository.CustomerRepository;
 import com.quang.da.repository.ExpertRepository;
+import com.quang.da.repository.StatusRepository;
 import com.quang.da.service.customResult.CheckTokenResult;
 
 @Service
@@ -28,6 +37,12 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private ExpertRepository expRep;
+	
+	@Autowired
+	private StatusRepository statusRep;
+	
+	@Autowired
+	private StorageService storageSer;
 
 	@Autowired
 	private JwtService jwt;
@@ -84,27 +99,33 @@ public class AccountServiceImpl implements AccountService {
 		return new CheckTokenResult(isExpert, isValid);
 	}
 
-	@Override
-	public boolean register(Expert entity) {
-		if(isEmailAvailable(entity.getEmail()))  return false;
-		
-		entity.setPassword(passwordEncoder().encode(entity.getEmail()));
-		entity.setCreatedDate(new Date(Calendar.getInstance().getTimeInMillis()));
-		
-		expRep.save(entity);
-		
-		return true;
-	}
+
 	
 
 	@Override
-	public boolean register(Customer entity) {
+	public boolean register(Account entity) {
 		if(isEmailAvailable(entity.getEmail()))  return false;
 		
-		entity.setPassword(passwordEncoder().encode(entity.getEmail()));
+		entity.setPassword(passwordEncoder().encode(entity.getPassword()));
 		entity.setCreatedDate(new Date(Calendar.getInstance().getTimeInMillis()));
-		
-		cusRep.save(entity);
+		Status status = statusRep.findOneByStatus(StatusEnum.NEW);
+		if(entity.isExpert()) {
+			Expert save = new Expert();
+			save.setEmail(entity.getEmail());
+			save.setPassword(entity.getPassword());
+			save.setFullName(entity.getFullName());
+			save.setCreatedDate(entity.getCreatedDate());
+			save.setStatus(status);
+			expRep.save(save);
+		}else {
+			Customer save = new Customer();
+			save.setEmail(entity.getEmail());
+			save.setPassword(entity.getPassword());
+			save.setFullName(entity.getFullName());
+			save.setCreatedDate(entity.getCreatedDate());
+			save.setStatus(status);
+			cusRep.save(save);
+		}
 		
 		return true;
 	}
@@ -124,26 +145,30 @@ public class AccountServiceImpl implements AccountService {
 		return result;
 	}
 	
-	@Override
+
 	public void updateProfile(Expert infor) {
 		Expert entity = expRep.findOneByEmail(getUserContext().getUsername()).get();
 		entity.setDescription(infor.getDescription());
 		entity.setFeePerHour(infor.getFeePerHour());
-		entity.setFirstname(infor.getFirstname());
-		entity.setLastname(infor.getLastname());
+
 		entity.setMajor(infor.getMajor());
 		expRep.save(entity);
 	}
 	
+	@Transactional(rollbackOn = Exception.class)
 	@Override
-	public void updateProfile(Customer infor) {
+	public void updateProfile(MultipartFile file,Customer infor) throws IOException {
 		Customer entity = cusRep.findOneByEmail(getUserContext().getUsername()).get();
-		entity.setFirstname(infor.getFirstname());
-		entity.setLastname(infor.getLastname());
 		entity.setAddress(infor.getAddress());
 		entity.setCity(infor.getCity());
 		entity.setDob(infor.getDob());
 		entity.setPrimaryLanguage(infor.getPrimaryLanguage());
+		
+		if(file != null) {
+			String imgName = UUID.randomUUID().toString();
+			entity.setImgName(imgName);
+			storageSer.saveFileFromMultipartFile(file, imgName);
+		}
 		cusRep.save(entity);
 	}
 	

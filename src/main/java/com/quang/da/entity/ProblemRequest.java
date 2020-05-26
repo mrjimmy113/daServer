@@ -59,7 +59,7 @@ public class ProblemRequest implements Serializable{
 	@Column
 	private Date deadlineDate;
 	
-	@OneToMany(mappedBy = "request", cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "request", cascade = CascadeType.ALL)
 	private List<ProblemRequestImage> images = new ArrayList<ProblemRequestImage>();
 	
 	

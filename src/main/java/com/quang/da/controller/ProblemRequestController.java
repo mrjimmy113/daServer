@@ -1,14 +1,21 @@
 package com.quang.da.controller;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,12 +23,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.quang.da.dto.ProblemRequestDTO;
 import com.quang.da.dto.ProblemRequestDetailDTO;
 import com.quang.da.entity.ProblemRequest;
+import com.quang.da.entity.ProblemRequestImage;
 import com.quang.da.service.ProblemRequestService;
 import com.quang.da.service.StorageService;
 
@@ -70,7 +79,7 @@ public class ProblemRequestController {
 			service.modifyRequest(files,entity,delImgs);
 			status = HttpStatus.OK;
 		} catch (Exception e) {
-			// TODO: handle exception
+			status = HttpStatus.BAD_REQUEST;
 		}
 		return new ResponseEntity<Number>(status.value(),status);
 	}
@@ -84,7 +93,7 @@ public class ProblemRequestController {
 			service.acceptExpert(expertId, requestId);
 			status = HttpStatus.OK;
 		} catch (Exception e) {
-			// TODO: handle exception
+			status = HttpStatus.BAD_REQUEST;
 		}
 		return new ResponseEntity<Number>(status.value(),status);
 	}
@@ -96,7 +105,7 @@ public class ProblemRequestController {
 			service.completeRequest(requestId, feedBack, rating);
 			status = HttpStatus.OK;
 		} catch (Exception e) {
-			// TODO: handle exception
+			status = HttpStatus.BAD_REQUEST;
 		}
 		return new ResponseEntity<Number>(status.value(),status);
 	}
@@ -107,9 +116,14 @@ public class ProblemRequestController {
 		ProblemRequestDetailDTO result = null;
 		try {
 			ProblemRequest entity = service.getProblemRequestDetail(id);
-			BeanUtils.copyProperties(entity, result);
+			result = new ProblemRequestDetailDTO();
+			BeanUtils.copyProperties(entity, result,"images");
+			for (ProblemRequestImage s : entity.getImages()) {
+				result.getImages().add(s.getImageName());
+			}
+			status = HttpStatus.OK;
 		} catch (Exception e) {
-			// TODO: handle exception
+			status = HttpStatus.BAD_REQUEST;
 		}
 		
 		return new ResponseEntity<ProblemRequestDetailDTO>(result,status);
@@ -133,6 +147,28 @@ public class ProblemRequestController {
 		}
 		
 		return new ResponseEntity<List<ProblemRequestDTO>>(result,status);
+	}
+	
+	@GetMapping(
+			  value = "/image",
+			  produces = MediaType.IMAGE_JPEG_VALUE
+			)
+	public @ResponseBody byte[] getImageWithMediaType(@RequestParam("imgName") String imgName) {
+			 
+		File a = new File("D:/" + imgName + ".jpeg");
+		InputStream in;
+		try {
+			in = new FileInputStream(a);
+			return IOUtils.toByteArray(in);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		
 	}
 	
 	

@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
@@ -22,13 +24,17 @@ public class Account {
 	private String password;
 	
 	@Column
-    private String firstname;
+    private String fullName;
 	
-    @Column
-    private String lastname;
+	@Column
+	private String imgName;
     
     @Column
     private Date createdDate;
+    
+    @ManyToOne
+	@JoinColumn(name = "statusId", nullable = false)
+	private Status status;
     
     @Transient
     private boolean isExpert;
@@ -39,14 +45,22 @@ public class Account {
 		super();
 	}
 
-	public Account(Integer id, String email, String password, String firstname, String lastname, Date createdDate) {
+	
+	
+
+	public Account(Integer id, String email, String password, String fullName, String lastname, Date createdDate,
+			Status status) {
+		super();
 		this.id = id;
 		this.email = email;
 		this.password = password;
-		this.firstname = firstname;
-		this.lastname = lastname;
+		this.fullName = fullName;
 		this.createdDate = createdDate;
+		this.status = status;
 	}
+
+
+
 
 	public Integer getId() {
 		return id;
@@ -72,21 +86,21 @@ public class Account {
 		this.password = password;
 	}
 
-	public String getFirstname() {
-		return firstname;
+
+
+	public String getFullName() {
+		return fullName;
 	}
 
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
+
+
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 
-	public String getLastname() {
-		return lastname;
-	}
 
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
+
 
 	public Date getCreatedDate() {
 		return createdDate;
@@ -102,6 +116,32 @@ public class Account {
 
 	public void setExpert(boolean isExpert) {
 		this.isExpert = isExpert;
+	}
+
+
+
+	public Status getStatus() {
+		return status;
+	}
+
+
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+
+
+
+	public String getImgName() {
+		return imgName;
+	}
+
+
+
+
+	public void setImgName(String imgName) {
+		this.imgName = imgName;
 	}
 	
 	

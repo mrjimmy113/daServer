@@ -1,6 +1,6 @@
 package com.quang.da.dto;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class CustomerProfileDTO {
 
@@ -8,9 +8,9 @@ public class CustomerProfileDTO {
 	
 	private String password;
 
-	private String firstname;
+	private String fullName;
 
-	private String lastname;
+	private String imgName;
 
 	private Date createdDate;
 
@@ -18,7 +18,7 @@ public class CustomerProfileDTO {
 
 	private String city;
 
-	private String dob;
+	private Date dob;
 
 	private String primaryLanguage;
 
@@ -26,21 +26,19 @@ public class CustomerProfileDTO {
 		return email;
 	}
 
-	public String getFirstname() {
-		return firstname;
+	
+
+	public String getFullName() {
+		return fullName;
 	}
 
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
+
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 
-	public String getLastname() {
-		return lastname;
-	}
 
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
 
 	public Date getCreatedDate() {
 		return createdDate;
@@ -66,13 +64,19 @@ public class CustomerProfileDTO {
 		this.city = city;
 	}
 
-	public String getDob() {
+	
+	
+	public Date getDob() {
 		return dob;
 	}
 
-	public void setDob(String dob) {
+
+
+	public void setDob(Date dob) {
 		this.dob = dob;
 	}
+
+
 
 	public String getPrimaryLanguage() {
 		return primaryLanguage;
@@ -94,6 +98,19 @@ public class CustomerProfileDTO {
 		this.email = email;
 	}
 
+
+
+	public String getImgName() {
+		return imgName;
+	}
+
+
+
+	public void setImgName(String imgName) {
+		this.imgName = imgName;
+	}
+
+	
 	
 
 }

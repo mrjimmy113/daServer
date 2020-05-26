@@ -30,9 +30,10 @@ public class Customer extends Account implements Serializable {
 
 	}
 
-	public Customer(Integer id, String email, String password, String firstname, String lastname, Date createdDate,
+	public Customer(Integer id, String email, String password, String firstname,
+			String lastname, Date createdDate, Status status,
 			String address, String city, Date dob, String primaryLanguage) {
-		super(id, email, password, firstname, lastname, createdDate);
+		super(id, email, password, firstname, lastname, createdDate, status);
 		this.address = address;
 		this.city = city;
 		this.dob = dob;
