@@ -82,7 +82,7 @@ public class AccountController {
 			if (res) {
 				status = HttpStatus.OK;
 			} else {
-				status = HttpStatus.CONFLICT;
+				status = HttpStatus.ACCEPTED;
 			}
 
 		} catch (Exception e) {
