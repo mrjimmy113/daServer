@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.quang.da.dto.ProblemRequestDTO;
 import com.quang.da.dto.ProblemRequestDetailDTO;
+import com.quang.da.entity.Major;
 import com.quang.da.entity.ProblemRequest;
 import com.quang.da.entity.ProblemRequestImage;
 import com.quang.da.service.ProblemRequestService;
@@ -47,13 +48,18 @@ public class ProblemRequestController {
 	@PostMapping
 	public ResponseEntity<Number> createRequest(@RequestParam("files") MultipartFile[] files,
 			@RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") java.util.Date endDate,
-			@RequestParam("title") String title, @RequestParam("description") String description) {
+			@RequestParam("title") String title, @RequestParam("description") String description,
+			@RequestParam("majorId") int id
+			) {
 		HttpStatus status = null;
 		try {
 			ProblemRequest entity = new ProblemRequest();
 			entity.setTitle(title);
 			entity.setDescription(description);
 			entity.setDeadlineDate(new Date(endDate.getTime()));
+			Major major = new Major();
+			major.setId(id);
+			entity.setMajor(major);
 			service.createRequest(files,entity);
 			status = HttpStatus.CREATED;
 		} catch (Exception e) {
@@ -169,6 +175,42 @@ public class ProblemRequestController {
 		}
 		return null;
 		
+	}
+	
+	@GetMapping("/search")
+	public ResponseEntity<List<ProblemRequestDTO>> expertSearch(@RequestParam int major,
+			@RequestParam(required = false) String city, @RequestParam(required = false) String language,
+			@RequestParam int time) {
+		HttpStatus status = null;
+		List<ProblemRequestDTO> result = new ArrayList<ProblemRequestDTO>();
+		try {
+			List<ProblemRequest> entities = service.expertSearch(major,city,language,time);
+			for (ProblemRequest e : entities) {
+				ProblemRequestDTO dto = new ProblemRequestDTO();
+				BeanUtils.copyProperties(e, dto);
+				result.add(dto);
+			}
+			status = HttpStatus.OK;
+		} catch (Exception e) {
+
+			status = HttpStatus.BAD_REQUEST;
+		}
+		
+		return new ResponseEntity<List<ProblemRequestDTO>>(result,status);
+	}
+	
+	@PostMapping("/apply")
+	public ResponseEntity<Number> expertApply(@RequestParam int requestId) {
+		HttpStatus status = null;
+		try {
+			
+			status = HttpStatus.OK;
+		} catch (Exception e) {
+			
+			status = HttpStatus.BAD_REQUEST;
+		}
+		
+		return new ResponseEntity<Number>(status.value(),status);
 	}
 	
 	

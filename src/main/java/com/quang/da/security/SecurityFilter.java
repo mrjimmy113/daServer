@@ -43,7 +43,7 @@ public class SecurityFilter extends UsernamePasswordAuthenticationFilter {
 			throws IOException, ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest) req;
 		String authToken = httpRequest.getHeader(TOKEN_HEADER);
-		if (authToken != null) {
+		if (authToken != null && !authToken.trim().isEmpty()) {
 			try {
 				if (jwt.validateTokenEmail(authToken)) {
 					String email = jwt.getEmailFromToken(authToken);

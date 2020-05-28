@@ -23,4 +23,8 @@ public interface ProblemRequestService {
 
 	ProblemRequest getProblemRequestDetail(int id);
 
+	List<ProblemRequest> expertSearch(int major, String city, String language, int time);
+
+	void expertApply(int requestId);
+
 }

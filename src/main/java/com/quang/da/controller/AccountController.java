@@ -19,10 +19,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.quang.da.dto.CustomerProfileDTO;
 import com.quang.da.dto.ExpertProfileDTO;
-import com.quang.da.dto.RegisterDTO;
-import com.quang.da.entity.Account;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
+import com.quang.da.entity.Major;
 import com.quang.da.service.AccountService;
 import com.quang.da.service.customResult.CheckTokenResult;
 
@@ -113,11 +112,12 @@ public class AccountController {
 	}
 	
 	@PostMapping(value = "/cus")
-	public ResponseEntity<Number> register(@RequestBody RegisterDTO infor) {
+	public ResponseEntity<Number> register(@RequestBody CustomerProfileDTO infor) {
 		HttpStatus status = null;
 		try {
-			Account entity = new Account();
+			Customer entity = new Customer();
 			BeanUtils.copyProperties(infor, entity);
+			entity.setDob(new Date(infor.getDob().getTime()));
 			boolean res = service.register(entity);
 
 			if (res) {
@@ -185,10 +185,13 @@ public class AccountController {
 		try {
 			Expert entity = new Expert();
 			BeanUtils.copyProperties(infor, entity);
-			boolean res = service.register(entity);
+			Major major = new Major();
+			major.setId(infor.getMajor().getId());
+			entity.setMajor(major);
+			boolean res = service.registerExpert(entity);
 
 			if (res) {
-				status = HttpStatus.OK;
+				status = HttpStatus.CREATED;
 			} else {
 				status = HttpStatus.CONFLICT;
 			}

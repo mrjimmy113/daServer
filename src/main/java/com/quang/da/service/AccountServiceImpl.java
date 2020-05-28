@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.nimbusds.jose.JOSEException;
-import com.quang.da.entity.Account;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
 import com.quang.da.entity.Status;
@@ -103,29 +102,29 @@ public class AccountServiceImpl implements AccountService {
 	
 
 	@Override
-	public boolean register(Account entity) {
+	public boolean register(Customer entity) {
 		if(isEmailAvailable(entity.getEmail()))  return false;
 		
 		entity.setPassword(passwordEncoder().encode(entity.getPassword()));
 		entity.setCreatedDate(new Date(Calendar.getInstance().getTimeInMillis()));
 		Status status = statusRep.findOneByStatus(StatusEnum.NEW);
-		if(entity.isExpert()) {
-			Expert save = new Expert();
-			save.setEmail(entity.getEmail());
-			save.setPassword(entity.getPassword());
-			save.setFullName(entity.getFullName());
-			save.setCreatedDate(entity.getCreatedDate());
-			save.setStatus(status);
-			expRep.save(save);
-		}else {
-			Customer save = new Customer();
-			save.setEmail(entity.getEmail());
-			save.setPassword(entity.getPassword());
-			save.setFullName(entity.getFullName());
-			save.setCreatedDate(entity.getCreatedDate());
-			save.setStatus(status);
-			cusRep.save(save);
-		}
+		entity.setStatus(status);
+		cusRep.save(entity);
+
+		
+		return true;
+	}
+	
+	@Override
+	public boolean registerExpert(Expert entity) {
+		if(isEmailAvailable(entity.getEmail()))  return false;
+		
+		entity.setPassword(passwordEncoder().encode(entity.getPassword()));
+		entity.setCreatedDate(new Date(Calendar.getInstance().getTimeInMillis()));
+		Status status = statusRep.findOneByStatus(StatusEnum.NEW);
+		entity.setStatus(status);
+		expRep.save(entity);
+		
 		
 		return true;
 	}

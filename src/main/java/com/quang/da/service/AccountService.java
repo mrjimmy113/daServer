@@ -6,7 +6,6 @@ import java.text.ParseException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.nimbusds.jose.JOSEException;
-import com.quang.da.entity.Account;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
 import com.quang.da.service.customResult.CheckTokenResult;
@@ -25,7 +24,9 @@ public interface AccountService {
 
 	CheckTokenResult checkToken(String token) throws ParseException, JOSEException;
 
-	boolean register(Account entity);
+	boolean register(Customer entity);
+	
+	boolean registerExpert(Expert entity);
 
 	void updateProfile(MultipartFile file, Customer infor) throws IOException;
 }

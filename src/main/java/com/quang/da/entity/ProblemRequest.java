@@ -59,29 +59,44 @@ public class ProblemRequest implements Serializable{
 	@Column
 	private Date deadlineDate;
 	
+	@Column
+	private float estimateHour;
+	
+	@Column
+	private float total;
+	
+	@JoinColumn(name = "majorId")
+	@ManyToOne
+	private Major major;
+	
 	@OneToMany(mappedBy = "request", cascade = CascadeType.ALL)
 	private List<ProblemRequestImage> images = new ArrayList<ProblemRequestImage>();
 	
 	
 
-	public ProblemRequest() {
-		super();
+
+	public Major getMajor() {
+		return major;
 	}
 
-	public ProblemRequest(Integer requestId, String title, String description, Status status, Customer customer,
-			Expert expert, String feedBack, float rating, Date createdDate, Date completedDate, Date deadlineDate) {
-		super();
-		this.requestId = requestId;
-		this.title = title;
-		this.description = description;
-		this.status = status;
-		this.customer = customer;
-		this.expert = expert;
-		this.feedBack = feedBack;
-		this.rating = rating;
-		this.createdDate = createdDate;
-		this.completedDate = completedDate;
-		this.deadlineDate = deadlineDate;
+	public void setMajor(Major major) {
+		this.major = major;
+	}
+
+	public float getEstimateHour() {
+		return estimateHour;
+	}
+
+	public void setEstimateHour(float estimateHour) {
+		this.estimateHour = estimateHour;
+	}
+
+	public float getTotal() {
+		return total;
+	}
+
+	public void setTotal(float total) {
+		this.total = total;
 	}
 
 	public Integer getRequestId() {

@@ -112,6 +112,29 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 	}
 	
 	@Override
+	public List<ProblemRequest> expertSearch(int id, String city, String language, int time) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, 1);
+		Date endDate = new Date(cal.getTimeInMillis());
+		cal.add(Calendar.DATE, -1);
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		cal.add(Calendar.DATE, - 7 * time);
+		Date startDate = new Date(cal.getTimeInMillis());
+		
+		if(city == null && language == null) {
+			return rep.findByMajorStartDateEndDate(id, startDate, endDate);
+		}else if(city != null && language == null) {
+			return rep.findByMajorCityStartDateEndDate(id, city, startDate, endDate);
+		}else if(city == null && language != null) {
+			return rep.findByMajorLanguageStartDateEndDate(id, language, startDate, endDate);
+		}else {
+			return rep.findByMajorCityLanguageStartDateEndDate(id, city, language, startDate, endDate);
+		}
+		
+	}
+	
+	
+	@Override
 	public ProblemRequest getProblemRequestDetail(int id) {
 		ProblemRequest result = null;
 		Optional<ProblemRequest> entity = rep.findById(id);
@@ -150,6 +173,11 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 			//Change status
 			rep.save(entity);
 		}
+	}
+	
+	@Override
+	public void expertApply(int requestId) {
+		
 	}
 	
 	
