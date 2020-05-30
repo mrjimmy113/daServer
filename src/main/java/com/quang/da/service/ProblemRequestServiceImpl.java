@@ -19,10 +19,12 @@ import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
 import com.quang.da.entity.ProblemRequest;
 import com.quang.da.entity.ProblemRequestImage;
+import com.quang.da.entity.RequestApplication;
 import com.quang.da.entity.Status;
 import com.quang.da.enumaration.StatusEnum;
 import com.quang.da.repository.ExpertRepository;
 import com.quang.da.repository.ProblemRequestRepository;
+import com.quang.da.repository.RequestApplicationRepository;
 import com.quang.da.repository.StatusRepository;
 import com.quang.da.security.CustomUser;
 
@@ -43,6 +45,9 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 	
 	@Autowired
 	private StatusRepository statusRep;
+	
+	@Autowired
+	private RequestApplicationRepository appRep;
 	
 	private CustomUser getUserContext() {
 		return (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -112,6 +117,22 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 	}
 	
 	@Override
+	public List<ProblemRequest> getCurrentUserRequestByStatus(StatusEnum status) {
+		if(getUserContext().isExpert()) 
+			return rep.findByExpertIdAndStatus(getUserContext().getId(), status);
+		else 
+			return rep.findByCustomerIdAndStatus(getUserContext().getId(), status);
+	}
+	
+	@Override
+	public List<ProblemRequest> getCurrentUserAppliedRequest() {
+		return  appRep.findAppliedRequests(getUserContext().getId());
+
+	}
+	
+
+	
+	@Override
 	public List<ProblemRequest> expertSearch(int id, String city, String language, int time) {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, 1);
@@ -120,9 +141,11 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		cal.add(Calendar.DATE, - 7 * time);
 		Date startDate = new Date(cal.getTimeInMillis());
+		List<Integer> appliedRequest = appRep.findAppliedRequestIds(getUserContext().getId());
+		appliedRequest.add(0);
 		
 		if(city == null && language == null) {
-			return rep.findByMajorStartDateEndDate(id, startDate, endDate);
+			return rep.findByMajorStartDateEndDate(id, appliedRequest, startDate, endDate);
 		}else if(city != null && language == null) {
 			return rep.findByMajorCityStartDateEndDate(id, city, startDate, endDate);
 		}else if(city == null && language != null) {
@@ -147,8 +170,9 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 		//Check status
 	}
 	
+	@Transactional(rollbackOn = Exception.class)
 	@Override
-	public void acceptExpert(int expertId, int requestId) {
+	public void acceptExpert(int requestId,int expertId) {
 		//Check status
 		//Change status
 		Optional<ProblemRequest> request = rep.findOneByIdAndCustomerId(requestId, getUserContext().getId());
@@ -158,7 +182,10 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 				ProblemRequest entity = request.get();
 				Expert expertEntity = expert.get();
 				entity.setExpert(expertEntity);
+				Status status = statusRep.findOneByStatus(StatusEnum.PROCESSING);
+				entity.setStatus(status);
 				rep.save(entity);
+				appRep.deleteApplicationByRequestId(requestId);
 			}
 		}
 	}
@@ -176,8 +203,28 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 	}
 	
 	@Override
-	public void expertApply(int requestId) {
+	public boolean expertApply(int requestId) {
+		//Check request con hop le hay khong
+		boolean result = false;
+		Optional<ProblemRequest> problemRequest = rep.findById(requestId);
 		
+		if(problemRequest.isPresent()) {
+			result = true;
+			RequestApplication entity = new RequestApplication();
+			Expert expert = new Expert();
+			expert.setId(getUserContext().getId());
+			entity.setProblemRequest(problemRequest.get());
+			entity.setExpert(expert);
+			entity.setCreatedDate(new Date(Calendar.getInstance().getTimeInMillis()));
+			appRep.save(entity);
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public List<Expert> getApplicantList(int requestId) {
+		return appRep.findAllExpertByRequestId(requestId);
 	}
 	
 	

@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.quang.da.dto.CustomerProfileDTO;
 import com.quang.da.dto.ExpertProfileDTO;
+import com.quang.da.dto.MajorDTO;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
 import com.quang.da.entity.Major;
@@ -165,7 +166,12 @@ public class AccountController {
 		ExpertProfileDTO dto = null;
 		try {
 			dto = new ExpertProfileDTO();
-			BeanUtils.copyProperties(service.getProfileExpert(),dto);
+			Expert entity = service.getProfileExpert();
+			BeanUtils.copyProperties(entity,dto);
+			MajorDTO marDto = new MajorDTO();
+			BeanUtils.copyProperties(entity.getMajor(), marDto);
+			dto.setMajor(marDto);
+			
 			
 
 			status = HttpStatus.OK;
@@ -205,13 +211,20 @@ public class AccountController {
 	}
 	
 	@PutMapping(value = "/exp")
-	public ResponseEntity<Number> updateExpert(@RequestBody ExpertProfileDTO infor) {
+	public ResponseEntity<Number> updateExpert(@RequestParam(name = "file", required = false) MultipartFile file
+			,@RequestParam String infor) {
 		HttpStatus status = null;
 
 		try {
+			ExpertProfileDTO dto = new ExpertProfileDTO();
+			Gson gson = new GsonBuilder().create();
+			dto = gson.fromJson(infor, ExpertProfileDTO.class);
 			Expert entity = new Expert();
-			BeanUtils.copyProperties(infor, entity);
-			//service.updateProfile(entity);
+			BeanUtils.copyProperties(dto, entity);
+			Major major = new Major();
+			BeanUtils.copyProperties(dto.getMajor(), major);
+			entity.setMajor(major);
+			service.updateProfileExpert(file,entity);
 
 			status = HttpStatus.OK;
 

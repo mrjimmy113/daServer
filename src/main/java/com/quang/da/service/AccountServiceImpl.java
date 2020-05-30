@@ -171,6 +171,25 @@ public class AccountServiceImpl implements AccountService {
 		cusRep.save(entity);
 	}
 	
+	@Transactional(rollbackOn = Exception.class)
+	@Override
+	public void updateProfileExpert(MultipartFile file,Expert infor) throws IOException {
+		Expert entity = expRep.findOneByEmail(getUserContext().getUsername()).get();
+		entity.setMajor(infor.getMajor());
+		entity.setFullName(infor.getFullName());
+		entity.setFeePerHour(infor.getFeePerHour());
+		entity.setBankName(infor.getBankName());
+		entity.setBankAccountNo(infor.getBankAccountNo());
+		entity.setDescription(infor.getDescription());
+		
+		if(file != null) {
+			String imgName = UUID.randomUUID().toString();
+			entity.setImgName(imgName);
+			storageSer.saveFileFromMultipartFile(file, imgName);
+		}
+		expRep.save(entity);
+	}
+	
 	@Override
 	public boolean changePassword(String currentPassword, String newPassword) {
 		if(!passwordEncoder().matches(currentPassword, getUserContext().getPassword())) return false;

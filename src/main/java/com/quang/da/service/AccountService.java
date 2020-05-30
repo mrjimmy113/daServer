@@ -29,4 +29,6 @@ public interface AccountService {
 	boolean registerExpert(Expert entity);
 
 	void updateProfile(MultipartFile file, Customer infor) throws IOException;
+
+	void updateProfileExpert(MultipartFile file, Expert infor) throws IOException;
 }

@@ -27,11 +27,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.quang.da.dto.ExpertProfileDTO;
+import com.quang.da.dto.MajorDTO;
 import com.quang.da.dto.ProblemRequestDTO;
 import com.quang.da.dto.ProblemRequestDetailDTO;
+import com.quang.da.entity.Expert;
 import com.quang.da.entity.Major;
 import com.quang.da.entity.ProblemRequest;
 import com.quang.da.entity.ProblemRequestImage;
+import com.quang.da.enumaration.StatusEnum;
 import com.quang.da.service.ProblemRequestService;
 import com.quang.da.service.StorageService;
 
@@ -139,8 +143,51 @@ public class ProblemRequestController {
 	public ResponseEntity<List<ProblemRequestDTO>> getCurrentUserProblem() {
 		HttpStatus status = null;
 		List<ProblemRequestDTO> result = new ArrayList<ProblemRequestDTO>();
+
 		try {
 			List<ProblemRequest> entities = service.getCurrentUserRequest();
+			for (ProblemRequest e : entities) {
+				ProblemRequestDTO dto = new ProblemRequestDTO();
+				BeanUtils.copyProperties(e, dto);
+				result.add(dto);
+			}
+			status = HttpStatus.OK;
+		} catch (Exception e) {
+
+			status = HttpStatus.BAD_REQUEST;
+		}
+		
+		return new ResponseEntity<List<ProblemRequestDTO>>(result,status);
+	}
+	
+	@GetMapping("/status")
+	public ResponseEntity<List<ProblemRequestDTO>> getCurrentUserProblemWithStatus(@RequestParam("status") StatusEnum statusEnum) {
+		HttpStatus status = null;
+		List<ProblemRequestDTO> result = new ArrayList<ProblemRequestDTO>();
+		try {
+
+			List<ProblemRequest> entities = service.getCurrentUserRequestByStatus(statusEnum);
+			for (ProblemRequest e : entities) {
+				ProblemRequestDTO dto = new ProblemRequestDTO();
+				BeanUtils.copyProperties(e, dto);
+				result.add(dto);
+			}
+			status = HttpStatus.OK;
+		} catch (Exception e) {
+
+			status = HttpStatus.BAD_REQUEST;
+		}
+		
+		return new ResponseEntity<List<ProblemRequestDTO>>(result,status);
+	}
+	
+	@GetMapping("/applied")
+	public ResponseEntity<List<ProblemRequestDTO>> getCurrentUserAppliedProblem() {
+		HttpStatus status = null;
+		List<ProblemRequestDTO> result = new ArrayList<ProblemRequestDTO>();
+		try {
+
+			List<ProblemRequest> entities = service.getCurrentUserAppliedRequest();
 			for (ProblemRequest e : entities) {
 				ProblemRequestDTO dto = new ProblemRequestDTO();
 				BeanUtils.copyProperties(e, dto);
@@ -203,10 +250,54 @@ public class ProblemRequestController {
 	public ResponseEntity<Number> expertApply(@RequestParam int requestId) {
 		HttpStatus status = null;
 		try {
+			boolean res = service.expertApply(requestId);
+			if(res) {
+				status = HttpStatus.OK;
+			}else {
+				status = HttpStatus.ACCEPTED;
+			}
+			
+		} catch (Exception e) {
+			
+			status = HttpStatus.BAD_REQUEST;
+		}
+		
+		return new ResponseEntity<Number>(status.value(),status);
+	}
+	
+	@GetMapping("/applicant")
+	public ResponseEntity<List<ExpertProfileDTO>> getApplicantList(@RequestParam int requestId) {
+		HttpStatus status = null;
+		List<ExpertProfileDTO> result = new ArrayList<ExpertProfileDTO>();
+		try {
+			List<Expert> entiList = service.getApplicantList(requestId);
+			for (Expert expert : entiList) {
+				ExpertProfileDTO dto = new ExpertProfileDTO();
+				dto.setFullName(expert.getFullName());
+				dto.setId(expert.getId());
+				MajorDTO majorDto = new MajorDTO();
+				majorDto.setMajor(expert.getMajor().getMajor());
+				dto.setMajor(majorDto);
+				dto.setFeePerHour(expert.getFeePerHour());
+				result.add(dto);
+			}
 			
 			status = HttpStatus.OK;
 		} catch (Exception e) {
+			status = HttpStatus.BAD_REQUEST;
+		}
+		return new ResponseEntity<List<ExpertProfileDTO>>(result,status);
+	}
+	
+	@PutMapping("/accept")
+	public ResponseEntity<Number> accepExpert(@RequestParam int requestId, @RequestParam int expertId) {
+		HttpStatus status = null;
+		try {
+			service.acceptExpert(requestId, expertId);
+			status = HttpStatus.OK;
 			
+		} catch (Exception e) {
+			e.printStackTrace();
 			status = HttpStatus.BAD_REQUEST;
 		}
 		

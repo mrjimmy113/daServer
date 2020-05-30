@@ -4,6 +4,9 @@ import java.sql.Date;
 
 public class ExpertProfileDTO {
 
+	private Integer id;
+	
+	
 	private String email;
 	
 	private String password;
@@ -27,6 +30,25 @@ public class ExpertProfileDTO {
 	private String bankAccountNo;
 	
 	
+	private String imgName;
+	
+	
+
+	public String getImgName() {
+		return imgName;
+	}
+
+	public void setImgName(String imgName) {
+		this.imgName = imgName;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
 	public String getEmail() {
 		return email;

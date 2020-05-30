@@ -9,6 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.quang.da.entity.ProblemRequest;
+import com.quang.da.enumaration.StatusEnum;
 
 public interface ProblemRequestRepository extends CrudRepository<ProblemRequest, Integer> {
 
@@ -21,6 +22,12 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 	
 	@Query("SELECT r FROM ProblemRequest r WHERE r.customer.id = :id")
 	List<ProblemRequest> findByCustomerId(@Param("id") int id);
+	
+	@Query("SELECT r FROM ProblemRequest r WHERE r.expert.id = :id AND r.status.status = :status")
+	List<ProblemRequest> findByExpertIdAndStatus(@Param("id") int id, @Param("status") StatusEnum statusEnum);
+	
+	@Query("SELECT r FROM ProblemRequest r WHERE r.customer.id = :id AND r.status.status = :status")
+	List<ProblemRequest> findByCustomerIdAndStatus(@Param("id") int id, @Param("status") StatusEnum statusEnum);
 	
 	@Query("SELECT r FROM ProblemRequest r WHERE "
 			+ "r.major.id = :majorId AND "
@@ -54,9 +61,11 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 	
 	@Query("SELECT r FROM ProblemRequest r WHERE "
 			+ "r.major.id = :majorId AND "
+			+ "r.id NOT IN :appliedList AND "
 			+ "r.createdDate BETWEEN :startDate AND :endDate")
 	List<ProblemRequest> findByMajorStartDateEndDate(
 			@Param("majorId") int id,
+			@Param("appliedList") List<Integer> appliedList,
 			@Param("startDate") Date startDate,
 			@Param("endDate") Date endDate);
 }

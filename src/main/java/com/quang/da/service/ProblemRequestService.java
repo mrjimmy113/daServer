@@ -5,13 +5,14 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.quang.da.entity.Expert;
 import com.quang.da.entity.ProblemRequest;
+import com.quang.da.enumaration.StatusEnum;
 
 public interface ProblemRequestService {
 
 	void cancelRequest(int id);
 
-	void acceptExpert(int expertId, int requestId);
 
 	void completeRequest(int requestId, String feedBack, float rating);
 
@@ -25,6 +26,19 @@ public interface ProblemRequestService {
 
 	List<ProblemRequest> expertSearch(int major, String city, String language, int time);
 
-	void expertApply(int requestId);
+	boolean expertApply(int requestId);
+
+	List<Expert> getApplicantList(int requestId);
+
+
+	void acceptExpert(int requestId, int expertId);
+
+
+
+
+	List<ProblemRequest> getCurrentUserRequestByStatus(StatusEnum status);
+
+
+	List<ProblemRequest> getCurrentUserAppliedRequest();
 
 }
