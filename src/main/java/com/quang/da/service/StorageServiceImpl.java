@@ -26,7 +26,7 @@ public class StorageServiceImpl implements StorageService {
 	
 	@Override
 	public void deleteImageByFileName(String fileName) throws IOException {
-		Path path = Paths.get("D:/" + fileName);
+		Path path = Paths.get("D:/" + fileName + ".jpeg");
 		Files.delete(path);
 	}
 	

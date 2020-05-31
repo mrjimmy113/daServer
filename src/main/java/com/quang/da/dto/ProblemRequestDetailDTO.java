@@ -28,6 +28,18 @@ public class ProblemRequestDetailDTO {
 	private Date deadlineDate;
 	
 	private List<String> images = new ArrayList<String>();
+	
+	private MajorDTO major;
+	
+	
+
+	public MajorDTO getMajor() {
+		return major;
+	}
+
+	public void setMajor(MajorDTO major) {
+		this.major = major;
+	}
 
 	public Integer getRequestId() {
 		return requestId;

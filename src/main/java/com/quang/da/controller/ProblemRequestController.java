@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.quang.da.dto.ExpertProfileDTO;
 import com.quang.da.dto.MajorDTO;
 import com.quang.da.dto.ProblemRequestDTO;
@@ -78,17 +80,24 @@ public class ProblemRequestController {
 			@RequestParam("requestId") Integer id,
 			@RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") java.util.Date endDate,
 			@RequestParam("title") String title, @RequestParam("description") String description,
-			@RequestParam("delImgs") String[] delImgs) {
+			@RequestParam("majorId") Integer majorParam,
+			@RequestParam("delImgs") String delImgs) {
 		HttpStatus status = null;
 		try {
+			Gson gson = new GsonBuilder().create();
+			
 			ProblemRequest entity = new ProblemRequest();
 			entity.setRequestId(id);
 			entity.setTitle(title);
 			entity.setDescription(description);
 			entity.setDeadlineDate(new Date(endDate.getTime()));
-			service.modifyRequest(files,entity,delImgs);
+			Major major = new Major();
+			major.setId(majorParam);
+			entity.setMajor(major);
+			service.modifyRequest(files,entity,gson.fromJson(delImgs, String[].class));
 			status = HttpStatus.OK;
 		} catch (Exception e) {
+			e.printStackTrace();
 			status = HttpStatus.BAD_REQUEST;
 		}
 		return new ResponseEntity<Number>(status.value(),status);
@@ -131,6 +140,9 @@ public class ProblemRequestController {
 			for (ProblemRequestImage s : entity.getImages()) {
 				result.getImages().add(s.getImageName());
 			}
+			MajorDTO majorDTO = new MajorDTO();
+			BeanUtils.copyProperties(entity.getMajor(), majorDTO);
+			result.setMajor(majorDTO);
 			status = HttpStatus.OK;
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;

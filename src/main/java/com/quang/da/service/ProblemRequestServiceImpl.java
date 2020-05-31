@@ -23,6 +23,7 @@ import com.quang.da.entity.RequestApplication;
 import com.quang.da.entity.Status;
 import com.quang.da.enumaration.StatusEnum;
 import com.quang.da.repository.ExpertRepository;
+import com.quang.da.repository.ProblemRequestImageRepository;
 import com.quang.da.repository.ProblemRequestRepository;
 import com.quang.da.repository.RequestApplicationRepository;
 import com.quang.da.repository.StatusRepository;
@@ -48,6 +49,9 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 	
 	@Autowired
 	private RequestApplicationRepository appRep;
+	
+	@Autowired
+	private ProblemRequestImageRepository imgRep;
 	
 	private CustomUser getUserContext() {
 		return (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -90,7 +94,7 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 				saveEntity.setTitle(entity.getTitle());
 				saveEntity.setDescription(entity.getDescription());
 				saveEntity.setDeadlineDate(entity.getDeadlineDate());
-				ArrayList<ProblemRequestImage> imgEntity = (ArrayList<ProblemRequestImage>) saveEntity.getImages();
+				List<ProblemRequestImage> imgEntity = saveEntity.getImages();
 				for (int i = 0 ; i < files.length; i ++) {
 					ProblemRequestImage tmp = new ProblemRequestImage();
 					tmp.setImageName(UUID.randomUUID().toString());
@@ -99,8 +103,9 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 					storageSer.saveFileFromMultipartFile(files[i], tmp.getImageName());
 				}
 				for(String imgName: delImgName) {
+					imgRep.deleteById(imgName);
 					storageSer.deleteImageByFileName(imgName);
-					imgEntity.remove(new ProblemRequestImage(imgName, null));
+					
 				}
 				entity.setImages(imgEntity);
 				rep.save(saveEntity);
