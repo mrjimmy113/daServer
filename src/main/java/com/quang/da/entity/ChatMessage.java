@@ -1,11 +1,17 @@
 package com.quang.da.entity;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import com.quang.da.chat.MessageType;
 
 @Entity
 public class ChatMessage {
@@ -19,16 +25,52 @@ public class ChatMessage {
 	private ProblemRequest request;
 	
 	@ManyToOne
-	@JoinColumn(nullable = false, name = "cusMesId")
-	private CustomerMessage customer;
+	@JoinColumn(nullable = false, name = "cusId")
+	private Customer customer;
 	
 	@ManyToOne
-	@JoinColumn(nullable = false, name = "expMesId")
-	private ExpertMessage expert;
+	@JoinColumn(nullable = false, name = "expId")
+	private Expert expert;
+	
+	private String message;
+	
+	private Timestamp time;
+	
+	@Enumerated(EnumType.STRING)
+	private MessageType messageType;
 	
 	
 	
 	
+	
+	
+	
+	public MessageType getMessageType() {
+		return messageType;
+	}
+
+
+
+
+
+
+
+
+
+
+	public void setMessageType(MessageType messageType) {
+		this.messageType = messageType;
+	}
+
+
+
+
+
+
+
+
+
+
 	public ChatMessage() {
 		super();
 	}
@@ -37,19 +79,64 @@ public class ChatMessage {
 	
 
 
-	public ChatMessage(Integer id, ProblemRequest request, CustomerMessage customer, ExpertMessage expert) {
-		super();
-		this.id = id;
-		this.request = request;
-		this.customer = customer;
-		this.expert = expert;
+	
+
+
+
+
+	public String getMessage() {
+		return message;
 	}
 
 
 
 
 
-	public CustomerMessage getCustomer() {
+
+
+
+
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+
+
+
+
+
+
+
+
+
+	public Timestamp getTime() {
+		return time;
+	}
+
+
+
+
+
+
+
+
+
+
+	public void setTime(Timestamp time) {
+		this.time = time;
+	}
+
+
+
+
+
+
+
+
+
+
+	public Customer getCustomer() {
 		return customer;
 	}
 
@@ -57,7 +144,12 @@ public class ChatMessage {
 
 
 
-	public void setCustomer(CustomerMessage customer) {
+
+
+
+
+
+	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
 
@@ -65,7 +157,12 @@ public class ChatMessage {
 
 
 
-	public ExpertMessage getExpert() {
+
+
+
+
+
+	public Expert getExpert() {
 		return expert;
 	}
 
@@ -73,9 +170,19 @@ public class ChatMessage {
 
 
 
-	public void setExpert(ExpertMessage expert) {
+
+
+
+
+
+	public void setExpert(Expert expert) {
 		this.expert = expert;
 	}
+
+
+
+
+
 
 
 
