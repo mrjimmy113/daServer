@@ -1,6 +1,6 @@
 package com.quang.da.chat;
 
-public class Message {
+public class SendMessage {
 
     private boolean isExpert;
     private String message;
