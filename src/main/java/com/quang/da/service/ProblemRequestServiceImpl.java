@@ -187,7 +187,7 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 				ProblemRequest entity = request.get();
 				Expert expertEntity = expert.get();
 				entity.setExpert(expertEntity);
-				Status status = statusRep.findOneByStatus(StatusEnum.PROCESSING);
+				Status status = statusRep.findOneByStatus(StatusEnum.ACCEPTED);
 				entity.setStatus(status);
 				rep.save(entity);
 				appRep.deleteApplicationByRequestId(requestId);

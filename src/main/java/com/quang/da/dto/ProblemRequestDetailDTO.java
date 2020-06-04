@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.quang.da.enumaration.StatusEnum;
+
 
 public class ProblemRequestDetailDTO {
 	
@@ -15,7 +17,7 @@ public class ProblemRequestDetailDTO {
 	
 	private String description;
 	
-	private String status;
+	private StatusEnum status;
 	
 	private String feedBack;
 	
@@ -65,11 +67,13 @@ public class ProblemRequestDetailDTO {
 		this.description = description;
 	}
 
-	public String getStatus() {
+
+
+	public StatusEnum getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(StatusEnum status) {
 		this.status = status;
 	}
 

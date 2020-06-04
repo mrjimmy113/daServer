@@ -30,14 +30,17 @@ public class ChatController {
         return service.saveMessage(channel,message,principal.getName());
     }
     
-    @GetMapping("/message")
+    @GetMapping("/chatMessage")
     public ResponseEntity<List<OutputMessage>> getMessages(@RequestParam int requestId) {
     	HttpStatus status = null;
+
     	List<OutputMessage> outputList = new ArrayList<OutputMessage>();
     	try {
 			outputList = service.getChatMessageByRequestId(requestId);
     		status = HttpStatus.OK;
+    		
 		} catch (Exception e) {
+			e.printStackTrace();
 			status = HttpStatus.BAD_REQUEST;
 		}
     	return new ResponseEntity<List<OutputMessage>>(outputList,status);

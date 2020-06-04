@@ -46,6 +46,7 @@ public class ChatServiceImpl implements ChatService {
 		chatMessage.setRequest(request);
 		chatMessage.setMessage(message.getMessage());
 		chatMessage.setTime(new Timestamp(System.currentTimeMillis()));
+		chatMessage.setMessageType(message.getType());
 		if(message.isExpert()) {
 			Expert expert = expRep.findOneByEmail(email).get();
 			chatMessage.setExpert(expert);
@@ -57,7 +58,7 @@ public class ChatServiceImpl implements ChatService {
 		
 		
 		
-        return new OutputMessage(message.isExpert(),message.getMessage(), message.getType(), time);
+        return new OutputMessage(message.isExpert(),message.getMessage(), message.getType(),"Today - " + time);
 	}
 	
 	@Override
@@ -65,7 +66,7 @@ public class ChatServiceImpl implements ChatService {
 		List<OutputMessage> outputList = new ArrayList<OutputMessage>();
 		List<ChatMessage> chatMessages = rep.findAllMessageOfRequest(requestId);
 		
-		SimpleDateFormat today = new SimpleDateFormat("Today - HH:mm");
+		SimpleDateFormat today = new SimpleDateFormat("HH:mm");
 		SimpleDateFormat time = new SimpleDateFormat("MM:dd - HH:mm");
 		
 		for (ChatMessage chatMessage : chatMessages) {
@@ -78,11 +79,11 @@ public class ChatServiceImpl implements ChatService {
 			Calendar now = Calendar.getInstance();
 			Calendar then = Calendar.getInstance();
 			then.setTimeInMillis(chatMessage.getTime().getTime());
-			
+			Date date = new Date(then.getTimeInMillis());
 			if(now.get(Calendar.DATE) == then.get(Calendar.DATE)) {
-				outputMessage.setTime(today.format(then));
+				outputMessage.setTime("Today - " + today.format(date));
 			}else {
-				outputMessage.setTime(time.format(then));
+				outputMessage.setTime(time.format(date));
 			}
 			outputList.add(outputMessage);
 		}

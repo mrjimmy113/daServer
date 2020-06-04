@@ -25,11 +25,11 @@ public class ChatMessage {
 	private ProblemRequest request;
 	
 	@ManyToOne
-	@JoinColumn(nullable = false, name = "cusId")
+	@JoinColumn(name = "cusId")
 	private Customer customer;
 	
 	@ManyToOne
-	@JoinColumn(nullable = false, name = "expId")
+	@JoinColumn(name = "expId")
 	private Expert expert;
 	
 	private String message;

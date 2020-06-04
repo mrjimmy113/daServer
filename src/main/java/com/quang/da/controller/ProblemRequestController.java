@@ -143,6 +143,7 @@ public class ProblemRequestController {
 			MajorDTO majorDTO = new MajorDTO();
 			BeanUtils.copyProperties(entity.getMajor(), majorDTO);
 			result.setMajor(majorDTO);
+			result.setStatus(entity.getStatus().getStatus());
 			status = HttpStatus.OK;
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;

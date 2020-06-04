@@ -11,7 +11,7 @@ import com.quang.da.entity.ChatMessage;
 public interface ChatMessageRepository extends CrudRepository<ChatMessage, Integer>{
 	
 	
-	@Query("SELECT c FROM ChatMessage as c WHERE c.request.requestId = :requestId")
+	@Query("SELECT c FROM ChatMessage as c WHERE c.request.requestId = :requestId ORDER BY c.time")
 	List<ChatMessage> findAllMessageOfRequest(@Param("requestId") int requestId);
 
 }
