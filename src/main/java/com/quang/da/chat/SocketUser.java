@@ -6,10 +6,21 @@ import java.util.Objects;
 public class SocketUser implements Principal {
 	private String name;
 	private int id;
+	private boolean isExpert;
+	
+	
 	
 	
 
-    public int getId() {
+    public boolean isExpert() {
+		return isExpert;
+	}
+
+	public void setExpert(boolean isExpert) {
+		this.isExpert = isExpert;
+	}
+
+	public int getId() {
 		return id;
 	}
 

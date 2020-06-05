@@ -7,6 +7,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import com.quang.da.service.AccountService;
 import com.quang.da.service.JwtService;
 
 @Configuration
@@ -15,6 +16,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Autowired
 	JwtService jwtService;
+	
+	@Autowired
+	AccountService accService;
 	
 	
     @Override
@@ -26,7 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(final StompEndpointRegistry registry) {
         registry.addEndpoint("/chat").setAllowedOrigins("*")
-        .setHandshakeHandler(new CustomHandshakeHandler(jwtService));
+        .setHandshakeHandler(new CustomHandshakeHandler(jwtService,accService));
   
     }
 

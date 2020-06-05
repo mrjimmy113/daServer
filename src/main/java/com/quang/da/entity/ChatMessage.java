@@ -204,7 +204,11 @@ public class ChatMessage {
 		this.request = request;
 	}
 
-
+	public Boolean isExpert() {
+		if(expert != null) return true;
+		if(customer != null) return false;
+		return null;
+	}
 	
 	
 }

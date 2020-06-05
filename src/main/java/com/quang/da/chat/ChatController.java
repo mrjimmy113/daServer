@@ -27,7 +27,7 @@ public class ChatController {
     @SendTo("/topic/messages.{channel}")
     public OutputMessage send(@DestinationVariable int channel,SendMessage message, Principal principal) throws Exception {
 
-        return service.saveMessage(channel,message,principal.getName());
+        return service.saveMessage(channel,message,(SocketUser)principal);
     }
     
     @GetMapping("/chatMessage")

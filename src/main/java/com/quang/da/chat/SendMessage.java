@@ -2,15 +2,9 @@ package com.quang.da.chat;
 
 public class SendMessage {
 
-    private boolean isExpert;
     private String message;
     private MessageType type;
-	public boolean isExpert() {
-		return isExpert;
-	}
-	public void setExpert(boolean isExpert) {
-		this.isExpert = isExpert;
-	}
+
 	public String getMessage() {
 		return message;
 	}
