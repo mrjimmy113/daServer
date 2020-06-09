@@ -3,6 +3,7 @@ package com.quang.da.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -20,7 +21,8 @@ public interface ChatMessageRepository extends CrudRepository<ChatMessage, Integ
 			+ " c.request.requestId = :requestId"
 			+ " AND c.messageType = :messageType"
 			+ " ORDER BY c.time DESC")
-	Optional<ChatMessage> findLastMessageByType(
+	List<ChatMessage> findLastMessageByType(
+			Pageable pageable,
 			@Param("requestId") int requestId,
 			@Param("messageType") MessageType messageType);
 

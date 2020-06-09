@@ -122,7 +122,7 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 	}
 	
 	@Override
-	public List<ProblemRequest> getCurrentUserRequestByStatus(StatusEnum status) {
+	public List<ProblemRequest> getCurrentUserRequestByStatus(StatusEnum[] status) {
 		if(getUserContext().isExpert()) 
 			return rep.findByExpertIdAndStatus(getUserContext().getId(), status);
 		else 
@@ -230,6 +230,16 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 	@Override
 	public List<Expert> getApplicantList(int requestId) {
 		return appRep.findAllExpertByRequestId(requestId);
+	}
+	
+	@Override
+	public Customer getCustomerProfileInRequestId(int requestId) {
+		return rep.findCustomerInRequest(requestId).get();
+	}
+	
+	@Override
+	public Expert getExpertProfileInRequestId(int requestId) {
+		return rep.findExpertInRequest(requestId).get();
 	}
 	
 	

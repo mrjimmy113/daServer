@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
@@ -20,6 +20,7 @@ import com.quang.da.chat.OutputMessage;
 import com.quang.da.chat.SendMessage;
 import com.quang.da.chat.SocketUser;
 import com.quang.da.dto.EstimateDTO;
+import com.quang.da.dto.FeedbackDTO;
 import com.quang.da.entity.ChatMessage;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
@@ -68,7 +69,7 @@ public class ChatServiceImpl implements ChatService {
 			Customer customer = cusRep.findOneByEmail(user.getName()).get();
 			chatMessage.setCustomer(customer);
 		}
-		rep.save(chatMessage);
+		
 		if (message.getType() != MessageType.CHAT)
 			switch (message.getType()) {
 			case ESTIMATE: {
@@ -80,18 +81,26 @@ public class ChatServiceImpl implements ChatService {
 			case ESTIMATE_YES: {
 				
 				request = proRep.findById(requestId).get();
-				Gson gson = new GsonBuilder().create();
-				EstimateDTO estimateDTO = gson.fromJson(message.getMessage(), EstimateDTO.class);
-				request.setTotal(estimateDTO.getTotal());
-				request.setEstimateHour(estimateDTO.getHour());
-				Status processStatus = statusRep.findOneByStatus(StatusEnum.PROCESSING);
-				request.setStatus(processStatus);
-				proRep.save(request);
+				if(request.getStatus().getStatus() == StatusEnum.ACCEPTED) {
+					Gson gson = new GsonBuilder().create();
+					EstimateDTO estimateDTO = gson.fromJson(message.getMessage(), EstimateDTO.class);
+					request.setTotal(estimateDTO.getTotal());
+					request.setEstimateHour(estimateDTO.getHour());
+					Status processStatus = statusRep.findOneByStatus(StatusEnum.PROCESSING);
+					request.setStatus(processStatus);
+					proRep.save(request);
+				}
 				break;
 			}
 			
 			case COMPLETE: {
 				request = proRep.findById(requestId).get();
+				if(!user.isExpert()) {
+					Gson gson = new GsonBuilder().create();
+					FeedbackDTO feedbackDTO = gson.fromJson(message.getMessage(), FeedbackDTO.class);
+					request.setRating(feedbackDTO.getRating());
+					request.setFeedBack(feedbackDTO.getFeedback());
+				}
 				switch (request.getStatus().getStatus()) {
 					case PROCESSING: {
 						Status newStatus = statusRep.findOneByStatus(StatusEnum.TMPCOMPLETE);
@@ -100,20 +109,26 @@ public class ChatServiceImpl implements ChatService {
 						break;
 					}
 	
-					case TMPCANCEL: {
-						Optional<ChatMessage> lastestCancel = rep.findLastMessageByType(requestId, MessageType.COMPLETE);
-						if(!lastestCancel.isPresent()) break;
+					case TMPCOMPLETE: {
+						List<ChatMessage> lastestCancel = rep.findLastMessageByType(
+								PageRequest.of(0, 1)
+								,requestId, MessageType.COMPLETE);
+						if(lastestCancel.isEmpty()) break;
 						
-						ChatMessage chMessage = lastestCancel.get();
+						ChatMessage chMessage = lastestCancel.get(0);
 						if(chMessage.isExpert()) {
 							if(chMessage.getExpert().getEmail().equals(user.getName())) break;
 						}else {
 							if(chMessage.getCustomer().getEmail().equals(user.getName())) break;
 						}
 						
+						
+						
 						Status newStatus = statusRep.findOneByStatus(StatusEnum.COMPLETE);
 						request.setStatus(newStatus);
+						request.setCompletedDate(new java.sql.Date(System.currentTimeMillis()));
 						proRep.save(request);
+						
 						message.setType(MessageType.COMPLETE_YES);
 						break;
 					}
@@ -144,19 +159,22 @@ public class ChatServiceImpl implements ChatService {
 					}
 	
 					case TMPCANCEL: {
-						Optional<ChatMessage> lastestCancel = rep.findLastMessageByType(requestId, MessageType.CANCEL);
-						if(!lastestCancel.isPresent()) break;
+						List<ChatMessage> lastestCancel = rep.findLastMessageByType(
+								PageRequest.of(0, 1),
+								requestId, MessageType.CANCEL);
+						if(lastestCancel.isEmpty()) break;
 						
-						ChatMessage chMessage = lastestCancel.get();
+						ChatMessage chMessage = lastestCancel.get(0);
 						if(chMessage.isExpert()) {
 							if(chMessage.getExpert().getEmail().equals(user.getName())) break;
 						}else {
 							if(chMessage.getCustomer().getEmail().equals(user.getName())) break;
 						}
-						
+					
 						Status newStatus = statusRep.findOneByStatus(StatusEnum.CANCEL);
 						request.setStatus(newStatus);
 						proRep.save(request);
+						
 						message.setType(MessageType.CANCEL_YES);
 						break;
 					}
@@ -172,6 +190,8 @@ public class ChatServiceImpl implements ChatService {
 
 			}
 
+
+		rep.save(chatMessage);
 		return new OutputMessage(user.isExpert(), message.getMessage(), message.getType(), "Today - " + time);
 	}
 

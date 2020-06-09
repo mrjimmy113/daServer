@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import com.quang.da.entity.Customer;
+import com.quang.da.entity.Expert;
 import com.quang.da.entity.ProblemRequest;
 import com.quang.da.enumaration.StatusEnum;
 
@@ -23,11 +25,11 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 	@Query("SELECT r FROM ProblemRequest r WHERE r.customer.id = :id")
 	List<ProblemRequest> findByCustomerId(@Param("id") int id);
 	
-	@Query("SELECT r FROM ProblemRequest r WHERE r.expert.id = :id AND r.status.status = :status")
-	List<ProblemRequest> findByExpertIdAndStatus(@Param("id") int id, @Param("status") StatusEnum statusEnum);
+	@Query("SELECT r FROM ProblemRequest r WHERE r.expert.id = :id AND r.status.status IN :status")
+	List<ProblemRequest> findByExpertIdAndStatus(@Param("id") int id, @Param("status") StatusEnum[] statusEnum);
 	
-	@Query("SELECT r FROM ProblemRequest r WHERE r.customer.id = :id AND r.status.status = :status")
-	List<ProblemRequest> findByCustomerIdAndStatus(@Param("id") int id, @Param("status") StatusEnum statusEnum);
+	@Query("SELECT r FROM ProblemRequest r WHERE r.customer.id = :id AND r.status.status IN :status")
+	List<ProblemRequest> findByCustomerIdAndStatus(@Param("id") int id, @Param("status") StatusEnum[] statusEnum);
 	
 	@Query("SELECT r FROM ProblemRequest r WHERE "
 			+ "r.major.id = :majorId AND "
@@ -68,4 +70,10 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 			@Param("appliedList") List<Integer> appliedList,
 			@Param("startDate") Date startDate,
 			@Param("endDate") Date endDate);
+	
+	@Query("SELECT r.customer FROM ProblemRequest r WHERE r.requestId = :id")
+	Optional<Customer> findCustomerInRequest(@Param("id") int requestId);
+	
+	@Query("SELECT r.expert FROM ProblemRequest r WHERE r.requestId = :id")
+	Optional<Expert> findExpertInRequest(@Param("id") int requestId);
 }

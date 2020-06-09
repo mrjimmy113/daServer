@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
 import com.quang.da.entity.ProblemRequest;
 import com.quang.da.enumaration.StatusEnum;
@@ -36,9 +37,15 @@ public interface ProblemRequestService {
 
 
 
-	List<ProblemRequest> getCurrentUserRequestByStatus(StatusEnum status);
+	List<ProblemRequest> getCurrentUserRequestByStatus(StatusEnum[] status);
 
 
 	List<ProblemRequest> getCurrentUserAppliedRequest();
+
+
+	Expert getExpertProfileInRequestId(int requestId);
+
+
+	Customer getCustomerProfileInRequestId(int requestId);
 
 }

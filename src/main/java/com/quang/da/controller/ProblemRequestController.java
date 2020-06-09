@@ -29,10 +29,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.quang.da.dto.CustomerProfileDTO;
 import com.quang.da.dto.ExpertProfileDTO;
 import com.quang.da.dto.MajorDTO;
 import com.quang.da.dto.ProblemRequestDTO;
 import com.quang.da.dto.ProblemRequestDetailDTO;
+import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
 import com.quang.da.entity.Major;
 import com.quang.da.entity.ProblemRequest;
@@ -174,7 +176,7 @@ public class ProblemRequestController {
 	}
 	
 	@GetMapping("/status")
-	public ResponseEntity<List<ProblemRequestDTO>> getCurrentUserProblemWithStatus(@RequestParam("status") StatusEnum statusEnum) {
+	public ResponseEntity<List<ProblemRequestDTO>> getCurrentUserProblemWithStatus(@RequestParam("status") StatusEnum[] statusEnum) {
 		HttpStatus status = null;
 		List<ProblemRequestDTO> result = new ArrayList<ProblemRequestDTO>();
 		try {
@@ -315,6 +317,47 @@ public class ProblemRequestController {
 		}
 		
 		return new ResponseEntity<Number>(status.value(),status);
+	}
+	
+	@GetMapping(value = "/cus")
+	public ResponseEntity<CustomerProfileDTO> profileCustomerRequest(@RequestParam("requestId") int requestId) {
+		HttpStatus status = null;
+		CustomerProfileDTO dto = null;
+		
+		try {
+			dto = new CustomerProfileDTO();
+			Customer entity = service.getCustomerProfileInRequestId(requestId);
+			BeanUtils.copyProperties(entity,dto);
+			status = HttpStatus.OK;
+
+		} catch (Exception e) {
+			status = HttpStatus.BAD_REQUEST;
+			e.printStackTrace();
+
+		}
+		return new ResponseEntity<CustomerProfileDTO>(dto, status);
+	}
+	
+	@GetMapping(value = "/exp")
+	public ResponseEntity<ExpertProfileDTO> profileExpertRequest(@RequestParam("requestId") int requestId) {
+		HttpStatus status = null;
+		ExpertProfileDTO dto = null;
+		
+		try {
+			dto = new ExpertProfileDTO();
+			Expert entity = service.getExpertProfileInRequestId(requestId);
+			MajorDTO marjDto = new MajorDTO();
+			BeanUtils.copyProperties(entity.getMajor(), marjDto);
+			BeanUtils.copyProperties(entity,dto);
+			dto.setMajor(marjDto);
+			status = HttpStatus.OK;
+
+		} catch (Exception e) {
+			status = HttpStatus.BAD_REQUEST;
+			e.printStackTrace();
+
+		}
+		return new ResponseEntity<ExpertProfileDTO>(dto, status);
 	}
 	
 	
