@@ -10,5 +10,8 @@ public enum MessageType {
     CANCEL_NO,
     COMPLETE,
     COMPLETE_YES,
-    COMPLETE_NO
+    COMPLETE_NO,
+    OFFER,
+    ANSWER,
+    ICE,
 }
