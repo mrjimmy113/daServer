@@ -237,4 +237,35 @@ public class AccountController {
 		}
 		return new ResponseEntity<Number>(status.value(), status);
 	}
+	
+	@PostMapping("/forgetPassword")
+	public ResponseEntity<Number> forgetPassword(@RequestParam String email) {
+		HttpStatus status = null;
+		try {
+			
+			boolean result = service.forgetPassword(email);
+			if(result) {
+				status = HttpStatus.OK;
+			}else {
+				status = HttpStatus.ACCEPTED;
+			}
+		} catch (Exception e) {
+			status = HttpStatus.BAD_REQUEST;
+			e.printStackTrace();
+			
+		}
+		System.out.println(status.value());
+		return new ResponseEntity<Number>(status.value(),status);
+	}
+	
+	@GetMapping("/reset")
+	public String reset(@RequestParam String token) {
+		String result = "Please check your email for new password";
+		try {
+			service.sendNewPassword(token);
+		} catch (Exception e) {
+			result = "Something wrong happen";
+		}
+		return result;
+	}
 }

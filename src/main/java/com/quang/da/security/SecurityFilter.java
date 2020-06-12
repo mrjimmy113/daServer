@@ -56,14 +56,11 @@ public class SecurityFilter extends UsernamePasswordAuthenticationFilter {
 					}
 				}
 			} catch (UsernameNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
 			} catch (java.text.ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
 			} catch (JOSEException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
 			}
 		}
 		chain.doFilter(req, res);

@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.sql.Date;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -28,6 +32,10 @@ import com.quang.da.repository.ExpertRepository;
 import com.quang.da.repository.StatusRepository;
 import com.quang.da.service.customResult.CheckTokenResult;
 
+import freemarker.template.MalformedTemplateNameException;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateNotFoundException;
+
 @Service
 public class AccountServiceImpl implements AccountService {
 
@@ -45,6 +53,12 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private JwtService jwt;
+	
+	@Autowired
+	private MailService mail;
+	
+	@Value("${server.path}")
+	private String serverPath;
 
 	private PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -211,6 +225,55 @@ public class AccountServiceImpl implements AccountService {
 		
 		
 		return true;
+	}
+	
+	@Override
+	public boolean forgetPassword(String email) throws JOSEException, TemplateNotFoundException, MalformedTemplateNameException, freemarker.core.ParseException, MessagingException, IOException, TemplateException {
+		boolean isExist = false;
+		String token = "";
+		Optional<Customer> opCus = cusRep.findOneByEmail(email);
+		if(opCus.isPresent()) {
+			isExist = true;
+			token = jwt.generateAuthToken(email, false);
+		}
+		Optional<Expert> opExp = expRep.findOneByEmail(email);
+		if(opExp.isPresent()) {
+			isExist = true;
+			token = jwt.generateAuthToken(email, true);
+		}
+		if(isExist) {
+			Map<String, Object> model = new HashMap<>();
+			model.put("link", serverPath + "/account/reset?token=" + token);
+			String[] mailList = new String[1];
+			mailList[0] = email;
+			mail.sendMail(mailList, "forget.ftl", model);
+		}
+		
+		return isExist;
+	}
+	
+	@Override
+	public void sendNewPassword(String token) throws ParseException, JOSEException, TemplateNotFoundException, MalformedTemplateNameException, freemarker.core.ParseException, MessagingException, IOException, TemplateException {
+		String email = jwt.getEmailFromToken(token);
+		boolean isExpert = jwt.getIsExpertFromToken(token);
+		String newPassword = UUID.randomUUID().toString();
+		newPassword = newPassword.substring(0, 7);
+		String password = newPassword;
+		newPassword = passwordEncoder().encode(newPassword);
+		if(isExpert) {
+			Expert expert = expRep.findOneByEmail(email).get();
+			expert.setPassword(newPassword);
+			expRep.save(expert);
+		}else {
+			Customer customer = cusRep.findOneByEmail(email).get();
+			customer.setPassword(newPassword);
+			cusRep.save(customer);
+		}
+		Map<String, Object> model = new HashMap<>();
+		model.put("newPassword", password);
+		String[] mailList = new String[1];
+		mailList[0] = email;
+		mail.sendMail(mailList, "newPassword.ftl", model);
 	}
 
 	
