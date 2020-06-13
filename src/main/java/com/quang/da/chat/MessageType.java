@@ -14,4 +14,7 @@ public enum MessageType {
     OFFER,
     ANSWER,
     ICE,
+    CALLING,
+    ACCEPT,
+    DECLINE
 }

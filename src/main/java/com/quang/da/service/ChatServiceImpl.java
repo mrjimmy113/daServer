@@ -69,10 +69,13 @@ public class ChatServiceImpl implements ChatService {
 			Customer customer = cusRep.findOneByEmail(user.getName()).get();
 			chatMessage.setCustomer(customer);
 		}
-		
+		System.out.println(message.getType());
 		if(message.getType() == MessageType.OFFER || 
 				message.getType() == MessageType.ANSWER ||
-				message.getType() == MessageType.ICE
+				message.getType() == MessageType.ICE ||
+				message.getType() == MessageType.CALLING ||
+				message.getType() == MessageType.ACCEPT ||
+				message.getType() == MessageType.DECLINE
 				) {
 			
 			return new OutputMessage(user.isExpert(), message.getMessage(), message.getType(), "Today - " + time);
