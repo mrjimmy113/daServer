@@ -1,7 +1,6 @@
 package com.quang.da.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -14,8 +13,8 @@ import com.quang.da.entity.ChatMessage;
 public interface ChatMessageRepository extends CrudRepository<ChatMessage, Integer>{
 	
 	
-	@Query("SELECT c FROM ChatMessage as c WHERE c.request.requestId = :requestId ORDER BY c.time")
-	List<ChatMessage> findAllMessageOfRequest(@Param("requestId") int requestId);
+	@Query("SELECT c FROM ChatMessage as c WHERE c.request.requestId = :requestId ORDER BY c.time DESC")
+	List<ChatMessage> findAllMessageOfRequest(@Param("requestId") int requestId, Pageable pageable);
 	
 	@Query("SELECT c FROM ChatMessage as c WHERE"
 			+ " c.request.requestId = :requestId"

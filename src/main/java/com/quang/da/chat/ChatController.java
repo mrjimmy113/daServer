@@ -31,12 +31,12 @@ public class ChatController {
     }
     
     @GetMapping("/chatMessage")
-    public ResponseEntity<List<OutputMessage>> getMessages(@RequestParam int requestId) {
+    public ResponseEntity<List<OutputMessage>> getMessages(@RequestParam int requestId, @RequestParam int page) {
     	HttpStatus status = null;
 
     	List<OutputMessage> outputList = new ArrayList<OutputMessage>();
     	try {
-			outputList = service.getChatMessageByRequestId(requestId);
+			outputList = service.getChatMessageByRequestId(requestId, page);
     		status = HttpStatus.OK;
     		
 		} catch (Exception e) {

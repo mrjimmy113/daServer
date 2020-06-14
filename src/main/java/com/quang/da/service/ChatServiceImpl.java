@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
@@ -205,11 +206,14 @@ public class ChatServiceImpl implements ChatService {
 		rep.save(chatMessage);
 		return new OutputMessage(user.isExpert(), message.getMessage(), message.getType(), "Today - " + time);
 	}
+	
+	private static int pageCap = 10;
 
 	@Override
-	public List<OutputMessage> getChatMessageByRequestId(int requestId) {
+	public List<OutputMessage> getChatMessageByRequestId(int requestId, int page) {
 		List<OutputMessage> outputList = new ArrayList<OutputMessage>();
-		List<ChatMessage> chatMessages = rep.findAllMessageOfRequest(requestId);
+		Pageable pageable = PageRequest.of(page, pageCap);
+		List<ChatMessage> chatMessages = rep.findAllMessageOfRequest(requestId,pageable);
 
 		SimpleDateFormat today = new SimpleDateFormat("HH:mm");
 		SimpleDateFormat time = new SimpleDateFormat("MM:dd - HH:mm");
