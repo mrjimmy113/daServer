@@ -6,6 +6,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -51,6 +52,7 @@ public class AccountController {
 		return new ResponseEntity<String>(result, status);
 	}
 	
+	@Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
 	@PostMapping(value = "check")
 	public ResponseEntity<Boolean> checkToken(@RequestParam("token") String token) {
 		HttpStatus status = null;
@@ -72,6 +74,7 @@ public class AccountController {
 		return new ResponseEntity<Boolean>(result,status);
 	}
 	
+	@Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
 	@PostMapping(value = "/changePassword")
 	public ResponseEntity<Number> changePassword(@RequestParam String currentPassword,@RequestParam String newPassword) {
 		HttpStatus status = null;
@@ -93,6 +96,7 @@ public class AccountController {
 		return new ResponseEntity<Number>(status.value(), status);
 	}
 	
+	@Secured({"ROLE_CUSTOMER"})
 	@GetMapping(value = "/cus")
 	public ResponseEntity<CustomerProfileDTO> profileCustomer() {
 		HttpStatus status = null;
@@ -137,6 +141,7 @@ public class AccountController {
 		return new ResponseEntity<Number>(status.value(), status);
 	}
 	
+	@Secured({"ROLE_CUSTOMER"})
 	@PutMapping(value = "/cus")
 	public ResponseEntity<Number> updateCustomer(
 			@RequestParam(name = "file", required = false) MultipartFile file
@@ -162,6 +167,7 @@ public class AccountController {
 		return new ResponseEntity<Number>(status.value(), status);
 	}
 	
+	@Secured({"ROLE_EXPERT"})
 	@GetMapping(value = "/exp")
 	public ResponseEntity<ExpertProfileDTO> profileExpert() {
 		HttpStatus status = null;
@@ -185,6 +191,7 @@ public class AccountController {
 		}
 		return new ResponseEntity<ExpertProfileDTO>(dto, status);
 	}
+	
 	
 	@PostMapping(value = "/exp")
 	public ResponseEntity<Number> registerExpert(@RequestBody ExpertProfileDTO infor) {
@@ -212,6 +219,7 @@ public class AccountController {
 		return new ResponseEntity<Number>(status.value(), status);
 	}
 	
+	@Secured({"ROLE_EXPERT"})
 	@PutMapping(value = "/exp")
 	public ResponseEntity<Number> updateExpert(@RequestParam(name = "file", required = false) MultipartFile file
 			,@RequestParam String infor) {
@@ -237,6 +245,7 @@ public class AccountController {
 		}
 		return new ResponseEntity<Number>(status.value(), status);
 	}
+	
 	
 	@PostMapping("/forgetPassword")
 	public ResponseEntity<Number> forgetPassword(@RequestParam String email) {

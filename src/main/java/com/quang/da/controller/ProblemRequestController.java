@@ -17,6 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,6 +54,7 @@ public class ProblemRequestController {
 	@Autowired
 	StorageService storageSer;
 	
+	@Secured({"ROLE_CUSTOMER"})
 	@PostMapping
 	public ResponseEntity<Number> createRequest(@RequestParam("files") MultipartFile[] files,
 			@RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") java.util.Date endDate,
@@ -77,6 +79,7 @@ public class ProblemRequestController {
 		return new ResponseEntity<Number>(status.value(),status);
 	}
 	
+	@Secured({"ROLE_CUSTOMER"})
 	@PutMapping
 	public ResponseEntity<Number> updateRequest(@RequestParam("files") MultipartFile[] files,
 			@RequestParam("requestId") Integer id,
@@ -106,7 +109,7 @@ public class ProblemRequestController {
 	}
 	
 	
-	
+	@Secured({"ROLE_CUSTOMER"})
 	@PatchMapping("/accept")
 	public ResponseEntity<Number> acceptExpert(@RequestParam int requestId, @RequestParam int expertId) {
 		HttpStatus status = null;
@@ -118,6 +121,7 @@ public class ProblemRequestController {
 		}
 		return new ResponseEntity<Number>(status.value(),status);
 	}
+	
 	
 	@PatchMapping("/complete")
 	public ResponseEntity<Number> completeRequest(@RequestParam int requestId, @RequestParam String feedBack, @RequestParam float rating) {
@@ -131,6 +135,7 @@ public class ProblemRequestController {
 		return new ResponseEntity<Number>(status.value(),status);
 	}
 	
+	@Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
 	@GetMapping("/detail")
 	public ResponseEntity<ProblemRequestDetailDTO> getProblemDetail (@RequestParam("id") int id) {
 		HttpStatus status = null;
@@ -154,6 +159,7 @@ public class ProblemRequestController {
 		return new ResponseEntity<ProblemRequestDetailDTO>(result,status);
 	}
 	
+	@Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
 	@GetMapping
 	public ResponseEntity<List<ProblemRequestDTO>> getCurrentUserProblem() {
 		HttpStatus status = null;
@@ -175,6 +181,7 @@ public class ProblemRequestController {
 		return new ResponseEntity<List<ProblemRequestDTO>>(result,status);
 	}
 	
+	@Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
 	@GetMapping("/status")
 	public ResponseEntity<List<ProblemRequestDTO>> getCurrentUserProblemWithStatus(@RequestParam("status") StatusEnum[] statusEnum) {
 		HttpStatus status = null;
@@ -195,7 +202,8 @@ public class ProblemRequestController {
 		
 		return new ResponseEntity<List<ProblemRequestDTO>>(result,status);
 	}
-	
+
+	@Secured({"ROLE_EXPERT"})
 	@GetMapping("/applied")
 	public ResponseEntity<List<ProblemRequestDTO>> getCurrentUserAppliedProblem() {
 		HttpStatus status = null;
@@ -239,6 +247,7 @@ public class ProblemRequestController {
 		
 	}
 	
+	@Secured({"ROLE_EXPERT"})
 	@GetMapping("/search")
 	public ResponseEntity<List<ProblemRequestDTO>> expertSearch(@RequestParam int major,
 			@RequestParam(required = false) String city, @RequestParam(required = false) String language,
@@ -261,6 +270,7 @@ public class ProblemRequestController {
 		return new ResponseEntity<List<ProblemRequestDTO>>(result,status);
 	}
 	
+	@Secured({"ROLE_EXPERT"})
 	@PostMapping("/apply")
 	public ResponseEntity<Number> expertApply(@RequestParam int requestId) {
 		HttpStatus status = null;
@@ -280,6 +290,7 @@ public class ProblemRequestController {
 		return new ResponseEntity<Number>(status.value(),status);
 	}
 	
+	@Secured({"ROLE_CUSTOMER"})
 	@GetMapping("/applicant")
 	public ResponseEntity<List<ExpertProfileDTO>> getApplicantList(@RequestParam int requestId) {
 		HttpStatus status = null;
@@ -304,6 +315,7 @@ public class ProblemRequestController {
 		return new ResponseEntity<List<ExpertProfileDTO>>(result,status);
 	}
 	
+	@Secured({"ROLE_CUSTOMER"})
 	@PutMapping("/accept")
 	public ResponseEntity<Number> accepExpert(@RequestParam int requestId, @RequestParam int expertId) {
 		HttpStatus status = null;
@@ -319,6 +331,7 @@ public class ProblemRequestController {
 		return new ResponseEntity<Number>(status.value(),status);
 	}
 	
+	@Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
 	@GetMapping(value = "/cus")
 	public ResponseEntity<CustomerProfileDTO> profileCustomerRequest(@RequestParam("requestId") int requestId) {
 		HttpStatus status = null;
@@ -338,6 +351,7 @@ public class ProblemRequestController {
 		return new ResponseEntity<CustomerProfileDTO>(dto, status);
 	}
 	
+	@Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
 	@GetMapping(value = "/exp")
 	public ResponseEntity<ExpertProfileDTO> profileExpertRequest(@RequestParam("requestId") int requestId) {
 		HttpStatus status = null;
