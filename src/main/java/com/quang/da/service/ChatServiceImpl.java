@@ -71,149 +71,167 @@ public class ChatServiceImpl implements ChatService {
 			chatMessage.setCustomer(customer);
 		}
 		System.out.println(message.getType());
-		if(message.getType() == MessageType.OFFER || 
-				message.getType() == MessageType.ANSWER ||
-				message.getType() == MessageType.ICE ||
-				message.getType() == MessageType.CALLING ||
-				message.getType() == MessageType.ACCEPT ||
-				message.getType() == MessageType.DECLINE
-				) {
-			
+		if (message.getType() == MessageType.OFFER || message.getType() == MessageType.ANSWER
+				|| message.getType() == MessageType.ICE || message.getType() == MessageType.CALLING
+				|| message.getType() == MessageType.ACCEPT || message.getType() == MessageType.DECLINE) {
+
 			return new OutputMessage(user.isExpert(), message.getMessage(), message.getType(), "Today - " + time);
 		}
-		
-		if (message.getType() != MessageType.CHAT)
-			switch (message.getType()) {
-			case ESTIMATE: {
-				
-				break;
+
+		switch (message.getType()) {
+		case CHAT: {
+			break;
+		}
+		case ESTIMATE: {
+
+			break;
+		}
+
+		case ESTIMATE_YES: {
+
+			request = proRep.findById(requestId).get();
+			if (request.getStatus().getStatus() == StatusEnum.ACCEPTED) {
+				Gson gson = new GsonBuilder().create();
+				EstimateDTO estimateDTO = gson.fromJson(message.getMessage(), EstimateDTO.class);
+				request.setTotal(estimateDTO.getTotal());
+				request.setEstimateHour(estimateDTO.getHour());
+				Status processStatus = statusRep.findOneByStatus(StatusEnum.PROCESSING);
+				request.setStatus(processStatus);
+				proRep.save(request);
 			}
-			
-			
-			case ESTIMATE_YES: {
-				
-				request = proRep.findById(requestId).get();
-				if(request.getStatus().getStatus() == StatusEnum.ACCEPTED) {
-					Gson gson = new GsonBuilder().create();
-					EstimateDTO estimateDTO = gson.fromJson(message.getMessage(), EstimateDTO.class);
-					request.setTotal(estimateDTO.getTotal());
-					request.setEstimateHour(estimateDTO.getHour());
-					Status processStatus = statusRep.findOneByStatus(StatusEnum.PROCESSING);
-					request.setStatus(processStatus);
-					proRep.save(request);
-				}
-				break;
+			break;
+		}
+
+		case COMPLETE: {
+			request = proRep.findById(requestId).get();
+			if (!user.isExpert()) {
+				Gson gson = new GsonBuilder().create();
+				FeedbackDTO feedbackDTO = gson.fromJson(message.getMessage(), FeedbackDTO.class);
+				request.setRating(feedbackDTO.getRating());
+				request.setFeedBack(feedbackDTO.getFeedback());
 			}
-			
-			case COMPLETE: {
-				request = proRep.findById(requestId).get();
-				if(!user.isExpert()) {
-					Gson gson = new GsonBuilder().create();
-					FeedbackDTO feedbackDTO = gson.fromJson(message.getMessage(), FeedbackDTO.class);
-					request.setRating(feedbackDTO.getRating());
-					request.setFeedBack(feedbackDTO.getFeedback());
-				}
-				switch (request.getStatus().getStatus()) {
-					case PROCESSING: {
-						Status newStatus = statusRep.findOneByStatus(StatusEnum.TMPCOMPLETE);
-						request.setStatus(newStatus);
-						proRep.save(request);
-						break;
-					}
-	
-					case TMPCOMPLETE: {
-						List<ChatMessage> lastestCancel = rep.findLastMessageByType(
-								PageRequest.of(0, 1)
-								,requestId, MessageType.COMPLETE);
-						if(lastestCancel.isEmpty()) break;
-						
-						ChatMessage chMessage = lastestCancel.get(0);
-						if(chMessage.isExpert()) {
-							if(chMessage.getExpert().getEmail().equals(user.getName())) break;
-						}else {
-							if(chMessage.getCustomer().getEmail().equals(user.getName())) break;
-						}
-						
-						
-						
-						Status newStatus = statusRep.findOneByStatus(StatusEnum.COMPLETE);
-						request.setStatus(newStatus);
-						request.setCompletedDate(new java.sql.Date(System.currentTimeMillis()));
-						proRep.save(request);
-						
-						message.setType(MessageType.COMPLETE_YES);
-						break;
-					}
-	
-					default:
-						break;
-				}
+			switch (request.getStatus().getStatus()) {
+			case PROCESSING: {
+				Status newStatus = statusRep.findOneByStatus(StatusEnum.TMPCOMPLETE);
+				request.setStatus(newStatus);
+				proRep.save(request);
 				break;
 			}
 
-			case CANCEL: {
-				request = proRep.findById(requestId).get();
-				switch (request.getStatus().getStatus()) {
-					case ACCEPTED: {
-						Status newStatus = statusRep.findOneByStatus(StatusEnum.CANCEL);
-						request.setStatus(newStatus);
-						//request.setExpert(null);
-						proRep.save(request);
-						message.setType(MessageType.CANCEL_YES);
-						break;
-					}
-	
-					case PROCESSING: {
-						Status newStatus = statusRep.findOneByStatus(StatusEnum.TMPCANCEL);
-						request.setStatus(newStatus);
-						proRep.save(request);
-						break;
-					}
-	
-					case TMPCANCEL: {
-						List<ChatMessage> lastestCancel = rep.findLastMessageByType(
-								PageRequest.of(0, 1),
-								requestId, MessageType.CANCEL);
-						if(lastestCancel.isEmpty()) break;
-						
-						ChatMessage chMessage = lastestCancel.get(0);
-						if(chMessage.isExpert()) {
-							if(chMessage.getExpert().getEmail().equals(user.getName())) break;
-						}else {
-							if(chMessage.getCustomer().getEmail().equals(user.getName())) break;
-						}
-					
-						Status newStatus = statusRep.findOneByStatus(StatusEnum.CANCEL);
-						request.setStatus(newStatus);
-						proRep.save(request);
-						
-						message.setType(MessageType.CANCEL_YES);
-						break;
-					}
-	
-					default:
-						break;
+			case TMPCOMPLETE: {
+				List<ChatMessage> lastestCancel = rep.findLastMessageByType(PageRequest.of(0, 1), requestId,
+						MessageType.COMPLETE);
+				if (lastestCancel.isEmpty()) {
+					message.setType(MessageType.NONE);
+					break;
 				}
+
+				ChatMessage chMessage = lastestCancel.get(0);
+				if (chMessage.isExpert()) {
+					if (chMessage.getExpert().getEmail().equals(user.getName())) {
+						message.setType(MessageType.NONE);
+						break;
+					}
+						
+				} else {
+					if (chMessage.getCustomer().getEmail().equals(user.getName())) {
+						message.setType(MessageType.NONE);
+						break;
+					}
+						
+				}
+
+				Status newStatus = statusRep.findOneByStatus(StatusEnum.COMPLETE);
+				request.setStatus(newStatus);
+				request.setCompletedDate(new java.sql.Date(System.currentTimeMillis()));
+				proRep.save(request);
+
+				message.setType(MessageType.COMPLETE_YES);
 				break;
 			}
 
 			default:
 				break;
+			}
+			break;
+		}
 
+		case CANCEL: {
+			request = proRep.findById(requestId).get();
+			switch (request.getStatus().getStatus()) {
+			case ACCEPTED: {
+				Status newStatus = statusRep.findOneByStatus(StatusEnum.CANCEL);
+				request.setStatus(newStatus);
+				// request.setExpert(null);
+				proRep.save(request);
+				message.setType(MessageType.CANCEL_YES);
+				break;
 			}
 
+			case PROCESSING: {
+				Status newStatus = statusRep.findOneByStatus(StatusEnum.TMPCANCEL);
+				request.setStatus(newStatus);
+				proRep.save(request);
+				break;
+			}
 
-		rep.save(chatMessage);
+			case TMPCANCEL: {
+				List<ChatMessage> lastestCancel = rep.findLastMessageByType(PageRequest.of(0, 1), requestId,
+						MessageType.CANCEL);
+				if (lastestCancel.isEmpty()) {
+					message.setType(MessageType.NONE);
+					break;
+				}
+					
+
+				ChatMessage chMessage = lastestCancel.get(0);
+				if (chMessage.isExpert()) {
+					if (chMessage.getExpert().getEmail().equals(user.getName())) {
+						message.setType(MessageType.NONE);
+						break;
+					}
+						
+				} else {
+					if (chMessage.getCustomer().getEmail().equals(user.getName())) {
+						message.setType(MessageType.NONE);
+						break;
+					}
+						
+				}
+
+				Status newStatus = statusRep.findOneByStatus(StatusEnum.CANCEL);
+				request.setStatus(newStatus);
+				proRep.save(request);
+
+				message.setType(MessageType.CANCEL_YES);
+				break;
+			}
+
+			default:
+				break;
+			}
+			break;
+		}
+
+		default:
+			break;
+
+		}
+
+		if(message.getType() != MessageType.NONE) {
+			rep.save(chatMessage);
+		}
+		
 		return new OutputMessage(user.isExpert(), message.getMessage(), message.getType(), "Today - " + time);
 	}
-	
+
 	private static int pageCap = 10;
 
 	@Override
 	public List<OutputMessage> getChatMessageByRequestId(int requestId, int page) {
 		List<OutputMessage> outputList = new ArrayList<OutputMessage>();
 		Pageable pageable = PageRequest.of(page, pageCap);
-		List<ChatMessage> chatMessages = rep.findAllMessageOfRequest(requestId,pageable);
+		List<ChatMessage> chatMessages = rep.findAllMessageOfRequest(requestId, pageable);
 
 		SimpleDateFormat today = new SimpleDateFormat("HH:mm");
 		SimpleDateFormat time = new SimpleDateFormat("MM:dd - HH:mm");
@@ -236,8 +254,7 @@ public class ChatServiceImpl implements ChatService {
 			} else {
 				outputMessage.setTime(time.format(date));
 			}
-	
-			
+
 			outputList.add(outputMessage);
 		}
 		return outputList;

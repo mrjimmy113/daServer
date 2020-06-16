@@ -52,7 +52,6 @@ public class AccountController {
 		return new ResponseEntity<String>(result, status);
 	}
 	
-	@Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
 	@PostMapping(value = "check")
 	public ResponseEntity<Boolean> checkToken(@RequestParam("token") String token) {
 		HttpStatus status = null;

@@ -1,6 +1,7 @@
 package com.quang.da.chat;
 
 public enum MessageType {
+	NONE,
 	CHAT ,
     ESTIMATE,
     ESTIMATE_YES,

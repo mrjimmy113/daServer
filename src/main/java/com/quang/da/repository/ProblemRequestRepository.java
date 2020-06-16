@@ -35,6 +35,7 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 			+ "r.major.id = :majorId AND "
 			+ "r.customer.city = :city AND "
 			+ "r.customer.primaryLanguage = :language AND "
+			+ "r.status.status = 'NEW' AND "
 			+ "r.createdDate BETWEEN :startDate AND :endDate")
 	List<ProblemRequest> findByMajorCityLanguageStartDateEndDate(
 			@Param("majorId") int id, @Param("city") String city,
@@ -45,6 +46,7 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 	@Query("SELECT r FROM ProblemRequest r WHERE "
 			+ "r.major.id = :majorId AND "
 			+ "r.customer.city = :city AND "
+			+ "r.status.status = 'NEW' AND "
 			+ "r.createdDate BETWEEN :startDate AND :endDate")
 	List<ProblemRequest> findByMajorCityStartDateEndDate(
 			@Param("majorId") int id, @Param("city") String city,
@@ -54,6 +56,7 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 	@Query("SELECT r FROM ProblemRequest r WHERE "
 			+ "r.major.id = :majorId AND "
 			+ "r.customer.primaryLanguage = :language AND "
+			+ "r.status.status = 'NEW' AND "
 			+ "r.createdDate BETWEEN :startDate AND :endDate")
 	List<ProblemRequest> findByMajorLanguageStartDateEndDate(
 			@Param("majorId") int id,
@@ -64,6 +67,7 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 	@Query("SELECT r FROM ProblemRequest r WHERE "
 			+ "r.major.id = :majorId AND "
 			+ "r.id NOT IN :appliedList AND "
+			+ "r.status.status = 'NEW' AND "
 			+ "r.createdDate BETWEEN :startDate AND :endDate")
 	List<ProblemRequest> findByMajorStartDateEndDate(
 			@Param("majorId") int id,

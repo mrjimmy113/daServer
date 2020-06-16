@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,7 @@ public class ChatController {
         return service.saveMessage(channel,message,(SocketUser)principal);
     }
     
+    @Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
     @GetMapping("/chatMessage")
     public ResponseEntity<List<OutputMessage>> getMessages(@RequestParam int requestId, @RequestParam int page) {
     	HttpStatus status = null;

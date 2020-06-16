@@ -231,17 +231,19 @@ public class ProblemRequestController {
 			)
 	public @ResponseBody byte[] getImageWithMediaType(@RequestParam("imgName") String imgName) {
 			 
-		File a = new File("D:/" + imgName + ".jpeg");
-		InputStream in;
-		try {
-			in = new FileInputStream(a);
-			return IOUtils.toByteArray(in);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(imgName != null) {
+			File a = new File("D:/" + imgName + ".jpeg");
+			InputStream in;
+			try {
+				in = new FileInputStream(a);
+				return IOUtils.toByteArray(in);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				
+			}
 		}
 		return null;
 		
