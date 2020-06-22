@@ -1,6 +1,8 @@
 package com.quang.da.controller;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,12 +177,14 @@ public class AccountController {
 			dto = new ExpertProfileDTO();
 			Expert entity = service.getProfileExpert();
 			BeanUtils.copyProperties(entity,dto);
-			MajorDTO marDto = new MajorDTO();
-			BeanUtils.copyProperties(entity.getMajor(), marDto);
-			dto.setMajor(marDto);
+			List<MajorDTO> majorDTOs = new ArrayList<MajorDTO>();
+			for (Major major : entity.getMajor()) {
+				MajorDTO mDTO = new MajorDTO();
+				BeanUtils.copyProperties(major, mDTO);
+				majorDTOs.add(mDTO);
+			}
+			dto.setMajor(majorDTOs);
 			
-			
-
 			status = HttpStatus.OK;
 
 		} catch (Exception e) {
@@ -199,9 +203,15 @@ public class AccountController {
 		try {
 			Expert entity = new Expert();
 			BeanUtils.copyProperties(infor, entity);
-			Major major = new Major();
-			major.setId(infor.getMajor().getId());
-			entity.setMajor(major);
+			List<Major> majors = new ArrayList<Major>();
+			for (MajorDTO dto : infor.getMajor()) {
+				Major m = new Major();
+				BeanUtils.copyProperties(dto, m);
+				majors.add(m);
+			}
+			entity.setMajor(majors);
+			
+			
 			boolean res = service.registerExpert(entity);
 
 			if (res) {
@@ -230,9 +240,13 @@ public class AccountController {
 			dto = gson.fromJson(infor, ExpertProfileDTO.class);
 			Expert entity = new Expert();
 			BeanUtils.copyProperties(dto, entity);
-			Major major = new Major();
-			BeanUtils.copyProperties(dto.getMajor(), major);
-			entity.setMajor(major);
+			List<Major> majors = new ArrayList<Major>();
+			for (MajorDTO d : dto.getMajor()) {
+				Major m = new Major();
+				BeanUtils.copyProperties(d, m);
+				majors.add(m);
+			}
+			entity.setMajor(majors);
 			service.updateProfileExpert(file,entity);
 
 			status = HttpStatus.OK;

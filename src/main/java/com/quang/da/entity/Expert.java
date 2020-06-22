@@ -2,10 +2,14 @@ package com.quang.da.entity;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -15,9 +19,10 @@ public class Expert extends Account implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@JoinColumn(name = "majorId")
-	@ManyToOne
-	private Major major;
+	@ManyToMany
+	@JoinTable(name = "expert_major", joinColumns = { @JoinColumn(name = "expert_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "major_id") })
+	private List<Major> major = new ArrayList<Major>();
 
 	@Column
 	private float feePerHour;
@@ -39,7 +44,7 @@ public class Expert extends Account implements Serializable {
 
 	public Expert(Integer id, String email, String password, String firstname, 
 			String lastname, Date createdDate, Status status,
-			Major major, float feePerHour, String description, String bankName, String bankAccountNo) {
+			List<Major> major, float feePerHour, String description, String bankName, String bankAccountNo) {
 		super(id, email, password, firstname, lastname, createdDate,status);
 		this.major = major;
 		this.feePerHour = feePerHour;
@@ -50,11 +55,11 @@ public class Expert extends Account implements Serializable {
 
 	
 
-	public Major getMajor() {
+	public List<Major> getMajor() {
 		return major;
 	}
 
-	public void setMajor(Major major) {
+	public void setMajor(List<Major> major) {
 		this.major = major;
 	}
 

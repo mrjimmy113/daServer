@@ -303,10 +303,14 @@ public class ProblemRequestController {
 				ExpertProfileDTO dto = new ExpertProfileDTO();
 				dto.setFullName(expert.getFullName());
 				dto.setId(expert.getId());
-				MajorDTO majorDto = new MajorDTO();
-				majorDto.setMajor(expert.getMajor().getMajor());
-				dto.setMajor(majorDto);
 				dto.setFeePerHour(expert.getFeePerHour());
+				List<MajorDTO> majorDTOs = new ArrayList<MajorDTO>();
+				for (Major major : expert.getMajor()) {
+					MajorDTO majorDTO = new MajorDTO();
+					BeanUtils.copyProperties(major, majorDTO);
+					majorDTOs.add(majorDTO);
+				}
+				dto.setMajor(majorDTOs);
 				result.add(dto);
 			}
 			
@@ -362,10 +366,14 @@ public class ProblemRequestController {
 		try {
 			dto = new ExpertProfileDTO();
 			Expert entity = service.getExpertProfileInRequestId(requestId);
-			MajorDTO marjDto = new MajorDTO();
-			BeanUtils.copyProperties(entity.getMajor(), marjDto);
 			BeanUtils.copyProperties(entity,dto);
-			dto.setMajor(marjDto);
+			List<MajorDTO> majorDTOs = new ArrayList<MajorDTO>();
+			for (Major major : entity.getMajor()) {
+				MajorDTO mDTO = new MajorDTO();
+				BeanUtils.copyProperties(major, mDTO);
+				majorDTOs.add(mDTO);
+			}
+			dto.setMajor(majorDTOs);
 			status = HttpStatus.OK;
 
 		} catch (Exception e) {

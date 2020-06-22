@@ -1,6 +1,8 @@
 package com.quang.da.dto;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExpertProfileDTO {
 
@@ -18,7 +20,7 @@ public class ExpertProfileDTO {
 	private Date createdDate;
 
 
-	private MajorDTO major;
+	private List<MajorDTO> major = new ArrayList<MajorDTO>();
 
 
 	private float feePerHour;
@@ -84,11 +86,11 @@ public class ExpertProfileDTO {
 		this.createdDate = createdDate;
 	}
 
-	public MajorDTO getMajor() {
+	public List<MajorDTO> getMajor() {
 		return major;
 	}
 
-	public void setMajor(MajorDTO major) {
+	public void setMajor(List<MajorDTO> major) {
 		this.major = major;
 	}
 
