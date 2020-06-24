@@ -11,6 +11,8 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -121,12 +123,15 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 			return rep.findByCustomerId(getUserContext().getId());
 	}
 	
+	private final static int ITEMCOUNT = 10;
+	
 	@Override
-	public List<ProblemRequest> getCurrentUserRequestByStatus(StatusEnum[] status) {
+	public List<ProblemRequest> getCurrentUserRequestByStatus(StatusEnum[] status, int page) {
+		Pageable pageable = PageRequest.of(page, ITEMCOUNT);
 		if(getUserContext().isExpert()) 
-			return rep.findByExpertIdAndStatus(getUserContext().getId(), status);
+			return rep.findByExpertIdAndStatus(getUserContext().getId(), status, pageable);
 		else 
-			return rep.findByCustomerIdAndStatus(getUserContext().getId(), status);
+			return rep.findByCustomerIdAndStatus(getUserContext().getId(), status, pageable);
 	}
 	
 	@Override
@@ -214,6 +219,7 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 		Optional<ProblemRequest> problemRequest = rep.findById(requestId);
 		
 		if(problemRequest.isPresent()) {
+			if(problemRequest.get().getDeadlineDate().before(Calendar.getInstance().getTime())) return result;
 			result = true;
 			RequestApplication entity = new RequestApplication();
 			Expert expert = new Expert();
@@ -240,6 +246,15 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 	@Override
 	public Expert getExpertProfileInRequestId(int requestId) {
 		return rep.findExpertInRequest(requestId).get();
+	}
+	
+	@Override
+	public List<Number> getSubableRequest() {
+		if(getUserContext().isExpert()) {
+			return rep.expertFindSubableRequest(getUserContext().getId());
+		}else {
+			return rep.customerFindSubableRequest(getUserContext().getId());
+		}
 	}
 	
 	

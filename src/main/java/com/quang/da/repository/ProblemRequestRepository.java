@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -26,10 +27,10 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 	List<ProblemRequest> findByCustomerId(@Param("id") int id);
 	
 	@Query("SELECT r FROM ProblemRequest r WHERE r.expert.id = :id AND r.status.status IN :status")
-	List<ProblemRequest> findByExpertIdAndStatus(@Param("id") int id, @Param("status") StatusEnum[] statusEnum);
+	List<ProblemRequest> findByExpertIdAndStatus(@Param("id") int id, @Param("status") StatusEnum[] statusEnum, Pageable pageable);
 	
 	@Query("SELECT r FROM ProblemRequest r WHERE r.customer.id = :id AND r.status.status IN :status")
-	List<ProblemRequest> findByCustomerIdAndStatus(@Param("id") int id, @Param("status") StatusEnum[] statusEnum);
+	List<ProblemRequest> findByCustomerIdAndStatus(@Param("id") int id, @Param("status") StatusEnum[] statusEnum, Pageable pageable);
 	
 	@Query("SELECT r FROM ProblemRequest r WHERE "
 			+ "r.major.id = :majorId AND "
@@ -80,4 +81,12 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 	
 	@Query("SELECT r.expert FROM ProblemRequest r WHERE r.requestId = :id")
 	Optional<Expert> findExpertInRequest(@Param("id") int requestId);
+	
+	@Query("SELECT r.requestId FROM ProblemRequest r WHERE r.customer.id = :id "
+			+ "AND r.status.status IN ('ACCEPTED', 'PROCESSING','TMPCOMPLETE','TMPCANCEL')")
+	List<Number> customerFindSubableRequest(@Param("id") int id);
+	
+	@Query("SELECT r.requestId FROM ProblemRequest r WHERE r.expert.id = :id "
+			+ "AND r.status.status IN ('ACCEPTED', 'PROCESSING','TMPCOMPLETE','TMPCANCEL')")
+	List<Number> expertFindSubableRequest(@Param("id") int id);
 }

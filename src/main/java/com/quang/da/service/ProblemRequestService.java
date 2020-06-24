@@ -35,11 +35,6 @@ public interface ProblemRequestService {
 	void acceptExpert(int requestId, int expertId);
 
 
-
-
-	List<ProblemRequest> getCurrentUserRequestByStatus(StatusEnum[] status);
-
-
 	List<ProblemRequest> getCurrentUserAppliedRequest();
 
 
@@ -47,5 +42,11 @@ public interface ProblemRequestService {
 
 
 	Customer getCustomerProfileInRequestId(int requestId);
+
+
+	List<Number> getSubableRequest();
+
+
+	List<ProblemRequest> getCurrentUserRequestByStatus(StatusEnum[] status, int page);
 
 }

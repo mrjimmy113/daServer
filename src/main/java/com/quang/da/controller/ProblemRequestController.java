@@ -183,12 +183,14 @@ public class ProblemRequestController {
 	
 	@Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
 	@GetMapping("/status")
-	public ResponseEntity<List<ProblemRequestDTO>> getCurrentUserProblemWithStatus(@RequestParam("status") StatusEnum[] statusEnum) {
+	public ResponseEntity<List<ProblemRequestDTO>> getCurrentUserProblemWithStatus(
+			@RequestParam("page") int page
+			,@RequestParam("status") StatusEnum[] statusEnum) {
 		HttpStatus status = null;
 		List<ProblemRequestDTO> result = new ArrayList<ProblemRequestDTO>();
 		try {
 
-			List<ProblemRequest> entities = service.getCurrentUserRequestByStatus(statusEnum);
+			List<ProblemRequest> entities = service.getCurrentUserRequestByStatus(statusEnum,page);
 			for (ProblemRequest e : entities) {
 				ProblemRequestDTO dto = new ProblemRequestDTO();
 				BeanUtils.copyProperties(e, dto);
@@ -382,6 +384,25 @@ public class ProblemRequestController {
 
 		}
 		return new ResponseEntity<ExpertProfileDTO>(dto, status);
+	}
+	
+	
+	@Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
+	@GetMapping(value = "/sub")
+	public ResponseEntity<List<Number>> getActiveChannel() {
+		HttpStatus status = null;
+		List<Number> dto = null;
+		
+		try {
+			dto = service.getSubableRequest();
+			status = HttpStatus.OK;
+
+		} catch (Exception e) {
+			status = HttpStatus.BAD_REQUEST;
+			e.printStackTrace();
+
+		}
+		return new ResponseEntity<List<Number>>(dto, status);
 	}
 	
 	
