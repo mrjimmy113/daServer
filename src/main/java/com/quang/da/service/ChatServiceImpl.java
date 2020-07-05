@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -56,6 +57,21 @@ public class ChatServiceImpl implements ChatService {
 	@Override
 	public OutputMessage saveMessage(int requestId, SendMessage message, SocketUser user) {
 		String time = new SimpleDateFormat("HH:mm").format(System.currentTimeMillis());
+		
+		System.out.println(message.getType());
+		if (message.getType() == MessageType.OFFER || message.getType() == MessageType.ANSWER
+				|| message.getType() == MessageType.ICE || message.getType() == MessageType.CALLING
+				|| message.getType() == MessageType.ACCEPT || message.getType() == MessageType.DECLINE) {
+
+			if(message.getType() == MessageType.CALLING) {
+				Optional<ProblemRequest> proOptional = proRep.findById(requestId);
+				if(proOptional.isPresent()) {
+					message.setMessage(proOptional.get().getTitle());
+				}
+			}
+			return new OutputMessage(user.isExpert(), message.getMessage(), message.getType(), "Today - " + time);
+		}
+		
 		ChatMessage chatMessage = new ChatMessage();
 		ProblemRequest request = new ProblemRequest();
 		request.setRequestId(requestId);
@@ -70,13 +86,7 @@ public class ChatServiceImpl implements ChatService {
 			Customer customer = cusRep.findOneByEmail(user.getName()).get();
 			chatMessage.setCustomer(customer);
 		}
-		System.out.println(message.getType());
-		if (message.getType() == MessageType.OFFER || message.getType() == MessageType.ANSWER
-				|| message.getType() == MessageType.ICE || message.getType() == MessageType.CALLING
-				|| message.getType() == MessageType.ACCEPT || message.getType() == MessageType.DECLINE) {
-
-			return new OutputMessage(user.isExpert(), message.getMessage(), message.getType(), "Today - " + time);
-		}
+		
 
 		switch (message.getType()) {
 		case CHAT: {

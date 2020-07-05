@@ -49,4 +49,7 @@ public interface ProblemRequestService {
 
 	List<ProblemRequest> getCurrentUserRequestByStatus(StatusEnum[] status, int page);
 
+
+	void deactiveExpireRequest();
+
 }

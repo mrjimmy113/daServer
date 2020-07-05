@@ -89,4 +89,8 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 	@Query("SELECT r.requestId FROM ProblemRequest r WHERE r.expert.id = :id "
 			+ "AND r.status.status IN ('ACCEPTED', 'PROCESSING','TMPCOMPLETE','TMPCANCEL')")
 	List<Number> expertFindSubableRequest(@Param("id") int id);
+	
+	@Query("SELECT r FROM ProblemRequest r WHERE r.deadlineDate < :endDate "
+			+ "AND r.status.status = 'NEW' ")
+	List<ProblemRequest> findExpireRequest(@Param("endDate") Date endDate);
 }

@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -219,7 +220,12 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 		Optional<ProblemRequest> problemRequest = rep.findById(requestId);
 		
 		if(problemRequest.isPresent()) {
-			if(problemRequest.get().getDeadlineDate().before(Calendar.getInstance().getTime())) return result;
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(Calendar.HOUR_OF_DAY, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			calendar.add(Calendar.MINUTE, -2);
+			if(problemRequest.get().getDeadlineDate().before(calendar.getTime())) return result;
 			result = true;
 			RequestApplication entity = new RequestApplication();
 			Expert expert = new Expert();
@@ -255,6 +261,22 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 		}else {
 			return rep.customerFindSubableRequest(getUserContext().getId());
 		}
+	}
+	
+	@Async
+	@Override
+	public void deactiveExpireRequest() {
+		Calendar calendar =Calendar.getInstance();
+		calendar.set(Calendar.HOUR, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.add(Calendar.MINUTE, -1);
+		List<ProblemRequest> list = rep.findExpireRequest(new Date(calendar.getTimeInMillis()));
+		Status status = statusRep.findOneByStatus(StatusEnum.DEACTIVE);
+		for (ProblemRequest problemRequest : list) {
+			problemRequest.setStatus(status);
+		}
+		rep.saveAll(list);
 	}
 	
 	
