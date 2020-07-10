@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.quang.da.dto.ExpertStatDTO;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
 import com.quang.da.entity.ProblemRequest;
@@ -51,5 +52,8 @@ public interface ProblemRequestService {
 
 
 	void deactiveExpireRequest();
+
+
+	ExpertStatDTO getExpertStat(int id);
 
 }

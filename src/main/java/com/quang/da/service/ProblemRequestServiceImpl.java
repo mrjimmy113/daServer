@@ -18,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.quang.da.customResult.ExpertStat;
+import com.quang.da.dto.ExpertStatDTO;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
 import com.quang.da.entity.ProblemRequest;
@@ -277,6 +279,22 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 			problemRequest.setStatus(status);
 		}
 		rep.saveAll(list);
+	}
+	
+	@Override
+	public ExpertStatDTO getExpertStat(int id) {
+		ExpertStatDTO result = new ExpertStatDTO();
+		StatusEnum[] status = {StatusEnum.COMPLETE,StatusEnum.CANCEL};
+		List<ExpertStat> stat = rep.getExpertStat(id, status);
+		for (ExpertStat expertStat : stat) {
+			if(expertStat.getStatusEnum() == StatusEnum.COMPLETE) {
+				result.setCompleteCount((int)expertStat.getCount());
+				result.setRating((float)expertStat.getRating());
+			}else if(expertStat.getStatusEnum() == StatusEnum.CANCEL) {
+				result.setCancelCount((int)expertStat.getCount());
+			}
+		}
+		return result;
 	}
 	
 	

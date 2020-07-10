@@ -32,6 +32,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.quang.da.dto.CustomerProfileDTO;
 import com.quang.da.dto.ExpertProfileDTO;
+import com.quang.da.dto.ExpertStatDTO;
 import com.quang.da.dto.MajorDTO;
 import com.quang.da.dto.ProblemRequestDTO;
 import com.quang.da.dto.ProblemRequestDetailDTO;
@@ -403,6 +404,21 @@ public class ProblemRequestController {
 
 		}
 		return new ResponseEntity<List<Number>>(dto, status);
+	}
+	
+	@Secured({"ROLE_EXPERT","ROLE_CUSTOMER"})
+	@GetMapping(value = "/expStat")
+	public ResponseEntity<ExpertStatDTO> getExpertStat(@RequestParam("expertId") int expertId) {
+		HttpStatus status = null;
+		ExpertStatDTO dto = null;
+		try {
+			dto = service.getExpertStat(expertId);
+			status = HttpStatus.OK;
+		} finally {
+			status = HttpStatus.BAD_REQUEST;
+		}
+		
+		return new ResponseEntity<ExpertStatDTO>(dto,status);
 	}
 	
 	

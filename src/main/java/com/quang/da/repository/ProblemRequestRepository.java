@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import com.quang.da.customResult.ExpertStat;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
 import com.quang.da.entity.ProblemRequest;
@@ -93,4 +94,9 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 	@Query("SELECT r FROM ProblemRequest r WHERE r.deadlineDate < :endDate "
 			+ "AND r.status.status = 'NEW' ")
 	List<ProblemRequest> findExpireRequest(@Param("endDate") Date endDate);
+	
+	@Query("SELECT new com.quang.da.customResult.ExpertStat(r.status.status,COUNT(r),SUM(r.rating)) "
+			+ "FROM ProblemRequest r WHERE r.expert.id = :id AND r.status.status IN :status GROUP BY r.status")
+	List<ExpertStat> getExpertStat(@Param("id") int expertId,@Param("status") StatusEnum[] statusEnum);
+	
 }
