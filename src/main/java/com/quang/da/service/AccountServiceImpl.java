@@ -178,9 +178,8 @@ public class AccountServiceImpl implements AccountService {
 		entity.setPrimaryLanguage(infor.getPrimaryLanguage());
 		
 		if(file != null) {
-			String imgName = UUID.randomUUID().toString();
+			String imgName = storageSer.saveFileFromMultipartFile(file);
 			entity.setImgName(imgName);
-			storageSer.saveFileFromMultipartFile(file, imgName);
 		}
 		cusRep.save(entity);
 	}
@@ -197,9 +196,8 @@ public class AccountServiceImpl implements AccountService {
 		entity.setDescription(infor.getDescription());
 		
 		if(file != null) {
-			String imgName = UUID.randomUUID().toString();
+			String imgName = storageSer.saveFileFromMultipartFile(file);
 			entity.setImgName(imgName);
-			storageSer.saveFileFromMultipartFile(file, imgName);
 		}
 		expRep.save(entity);
 	}

@@ -1,16 +1,11 @@
 package com.quang.da.controller;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -234,17 +229,11 @@ public class ProblemRequestController {
 			)
 	public @ResponseBody byte[] getImageWithMediaType(@RequestParam("imgName") String imgName) {
 			 
-		if(imgName != null) {
-			File a = new File("D:/" + imgName + ".jpeg");
-			InputStream in;
+		if(imgName != null && !imgName.isEmpty()) {
 			try {
-				in = new FileInputStream(a);
-				return IOUtils.toByteArray(in);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				
+				service.getImage(imgName);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				return null;
 				
 			}
 		}
@@ -307,6 +296,9 @@ public class ProblemRequestController {
 				dto.setFullName(expert.getFullName());
 				dto.setId(expert.getId());
 				dto.setFeePerHour(expert.getFeePerHour());
+				dto.setEmail(expert.getEmail());
+				dto.setDescription(expert.getDescription());
+				dto.setImgName(expert.getImgName());
 				List<MajorDTO> majorDTOs = new ArrayList<MajorDTO>();
 				for (Major major : expert.getMajor()) {
 					MajorDTO majorDTO = new MajorDTO();
@@ -414,9 +406,10 @@ public class ProblemRequestController {
 		try {
 			dto = service.getExpertStat(expertId);
 			status = HttpStatus.OK;
-		} finally {
+		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-		}
+			e.printStackTrace();
+		} 
 		
 		return new ResponseEntity<ExpertStatDTO>(dto,status);
 	}

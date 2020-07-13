@@ -56,4 +56,7 @@ public interface ProblemRequestService {
 
 	ExpertStatDTO getExpertStat(int id);
 
+
+	byte[] getImage(String imgName) throws IOException;
+
 }

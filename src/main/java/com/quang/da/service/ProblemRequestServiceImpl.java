@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -77,10 +76,11 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 		ArrayList<ProblemRequestImage> imgEntity = new ArrayList<ProblemRequestImage>();
 		for (int i = 0 ; i < files.length; i ++) {
 			ProblemRequestImage tmp = new ProblemRequestImage();
-			tmp.setImageName(UUID.randomUUID().toString());
+			String imgName = storageSer.saveFileFromMultipartFile(files[i]);
+			tmp.setImageName(imgName);
 			tmp.setRequestId(entity);
 			imgEntity.add(tmp);
-			storageSer.saveFileFromMultipartFile(files[i], tmp.getImageName());
+			
 		}
 		entity.setImages(imgEntity);
 		entity.setStatus(status);
@@ -102,10 +102,16 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 				List<ProblemRequestImage> imgEntity = saveEntity.getImages();
 				for (int i = 0 ; i < files.length; i ++) {
 					ProblemRequestImage tmp = new ProblemRequestImage();
-					tmp.setImageName(UUID.randomUUID().toString());
+					String imgName = storageSer.saveFileFromMultipartFile(files[i]);
+					tmp.setImageName(imgName);
 					tmp.setRequestId(entity);
 					imgEntity.add(tmp);
-					storageSer.saveFileFromMultipartFile(files[i], tmp.getImageName());
+					/*
+					 * ProblemRequestImage tmp = new ProblemRequestImage();
+					 * tmp.setImageName(UUID.randomUUID().toString()); tmp.setRequestId(entity);
+					 * imgEntity.add(tmp); storageSer.saveFileFromMultipartFile(files[i],
+					 * tmp.getImageName());
+					 */
 				}
 				for(String imgName: delImgName) {
 					imgRep.deleteById(imgName);
@@ -295,6 +301,11 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 			}
 		}
 		return result;
+	}
+	
+	@Override
+	public byte[] getImage(String imgName) throws IOException {
+		return storageSer.getImageByte(imgName);
 	}
 	
 	

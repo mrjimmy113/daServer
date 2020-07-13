@@ -6,10 +6,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface StorageService {
 
-
-
-	void saveFileFromMultipartFile(MultipartFile file, String fileName) throws IOException;
-
 	void deleteImageByFileName(String fileName) throws IOException;
+
+	String saveFileFromMultipartFile(MultipartFile file) throws IOException;
+
+	byte[] getImageByte(String name) throws IOException;
 
 }
