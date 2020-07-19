@@ -244,7 +244,7 @@ public class ChatServiceImpl implements ChatService {
 		List<ChatMessage> chatMessages = rep.findAllMessageOfRequest(requestId, pageable);
 
 		SimpleDateFormat today = new SimpleDateFormat("HH:mm");
-		SimpleDateFormat time = new SimpleDateFormat("MM:dd - HH:mm");
+		SimpleDateFormat time = new SimpleDateFormat("MM/dd - HH:mm");
 
 		for (ChatMessage chatMessage : chatMessages) {
 			OutputMessage outputMessage = new OutputMessage();
