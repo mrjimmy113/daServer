@@ -1,5 +1,6 @@
 package com.quang.da.service;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -304,8 +305,17 @@ public class ProblemRequestServiceImpl implements ProblemRequestService {
 	}
 	
 	@Override
-	public byte[] getImage(String imgName) throws IOException {
-		return storageSer.getImageByte(imgName);
+	public byte[] getImage(String imgName)  {
+		if(imgName != "null")
+			try {
+				return storageSer.getImageByte(imgName);
+			} catch (IOException e) {
+				if(e instanceof FileNotFoundException) {
+					
+				}
+			}
+		
+		return null;
 	}
 	
 	

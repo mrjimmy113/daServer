@@ -1,6 +1,8 @@
 package com.quang.da.security;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -37,6 +39,8 @@ public class SecurityFilter extends UsernamePasswordAuthenticationFilter {
 	public void setAuthenticationManager(AuthenticationManager authenticationManager) {
 		super.setAuthenticationManager(authenticationManager);
 	}
+	
+	private final static Logger LOGGER = Logger.getLogger(SecurityFilter.class.getName());
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
@@ -56,11 +60,11 @@ public class SecurityFilter extends UsernamePasswordAuthenticationFilter {
 					}
 				}
 			} catch (UsernameNotFoundException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.WARNING, e.getMessage());
 			} catch (java.text.ParseException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.WARNING, authToken +  e.getMessage());
 			} catch (JOSEException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.WARNING, e.getMessage());
 			}
 		}
 		chain.doFilter(req, res);

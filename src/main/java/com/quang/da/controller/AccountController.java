@@ -3,6 +3,8 @@ package com.quang.da.controller;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.quang.da.chat.ChatController;
 import com.quang.da.dto.CustomerProfileDTO;
 import com.quang.da.dto.ExpertProfileDTO;
 import com.quang.da.dto.MajorDTO;
@@ -33,6 +36,8 @@ import com.quang.da.service.customResult.CheckTokenResult;
 @RequestMapping("/account")
 public class AccountController {
 
+	private static final Logger LOGGER = Logger.getLogger( ChatController.class.getName() );
+	
 	@Autowired
 	private AccountService service;
 	
@@ -48,7 +53,7 @@ public class AccountController {
 
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 
 		}
 		return new ResponseEntity<String>(result, status);
@@ -70,7 +75,7 @@ public class AccountController {
 			
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 		}
 		return new ResponseEntity<Boolean>(result,status);
 	}
@@ -91,7 +96,7 @@ public class AccountController {
 
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 
 		}
 		return new ResponseEntity<Number>(status.value(), status);
@@ -111,7 +116,7 @@ public class AccountController {
 
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 
 		}
 		return new ResponseEntity<CustomerProfileDTO>(dto, status);
@@ -136,7 +141,7 @@ public class AccountController {
 			System.out.println(status.toString());
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 
 		}
 		return new ResponseEntity<Number>(status.value(), status);
@@ -162,7 +167,7 @@ public class AccountController {
 
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 
 		}
 		return new ResponseEntity<Number>(status.value(), status);
@@ -189,7 +194,7 @@ public class AccountController {
 
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 
 		}
 		return new ResponseEntity<ExpertProfileDTO>(dto, status);
@@ -222,7 +227,7 @@ public class AccountController {
 
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 
 		}
 		return new ResponseEntity<Number>(status.value(), status);
@@ -253,7 +258,7 @@ public class AccountController {
 
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 
 		}
 		return new ResponseEntity<Number>(status.value(), status);
@@ -273,7 +278,7 @@ public class AccountController {
 			}
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			
 		}
 		System.out.println(status.value());
@@ -286,6 +291,7 @@ public class AccountController {
 		try {
 			service.sendNewPassword(token);
 		} catch (Exception e) {
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			result = "Something wrong happen";
 		}
 		return result;

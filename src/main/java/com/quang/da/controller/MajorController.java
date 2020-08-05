@@ -2,6 +2,8 @@ package com.quang.da.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import com.quang.da.service.MajorService;
 @RequestMapping("/major")
 public class MajorController {
 
+	private static final Logger LOGGER = Logger.getLogger( MajorController.class.getName() );
 	@Autowired
 	private MajorService ser;
 	
@@ -39,6 +42,7 @@ public class MajorController {
 			
 			status = HttpStatus.OK;
 		} catch (Exception e) {
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		

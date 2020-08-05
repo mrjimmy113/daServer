@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import com.quang.da.chat.SendMessage;
 import com.quang.da.chat.SocketUser;
 import com.quang.da.dto.EstimateDTO;
 import com.quang.da.dto.FeedbackDTO;
+import com.quang.da.dto.ProblemRequestDTO;
 import com.quang.da.entity.ChatMessage;
 import com.quang.da.entity.Customer;
 import com.quang.da.entity.Expert;
@@ -66,7 +68,12 @@ public class ChatServiceImpl implements ChatService {
 			if(message.getType() == MessageType.CALLING) {
 				Optional<ProblemRequest> proOptional = proRep.findById(requestId);
 				if(proOptional.isPresent()) {
-					message.setMessage(proOptional.get().getTitle());
+					Gson gson = new GsonBuilder().create();
+					ProblemRequestDTO dto = new ProblemRequestDTO();
+					dto.setRequestId(proOptional.get().getRequestId());
+					dto.setTitle(proOptional.get().getTitle());
+					
+					message.setMessage(gson.toJson(dto));
 				}
 			}
 			return new OutputMessage(user.isExpert(), message.getMessage(), message.getType(), "Today - " + time);

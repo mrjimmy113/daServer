@@ -3,6 +3,8 @@ package com.quang.da.chat;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,8 @@ import com.quang.da.service.ChatService;
 
 @RestController
 public class ChatController {
+	
+	private static final Logger LOGGER = Logger.getLogger( ChatController.class.getName() );
 	
 	@Autowired
 	ChatService service;
@@ -42,7 +46,7 @@ public class ChatController {
     		status = HttpStatus.OK;
     		
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
     	return new ResponseEntity<List<OutputMessage>>(outputList,status);

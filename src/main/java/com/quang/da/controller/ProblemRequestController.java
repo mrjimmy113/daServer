@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,8 @@ import com.quang.da.service.StorageService;
 @RequestMapping("/request")
 public class ProblemRequestController {
 	
+	private static final Logger LOGGER = Logger.getLogger( ProblemRequestController.class.getName() );
+	
 	@Autowired
 	ProblemRequestService service;
 	
@@ -69,7 +73,7 @@ public class ProblemRequestController {
 			service.createRequest(files,entity);
 			status = HttpStatus.CREATED;
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		return new ResponseEntity<Number>(status.value(),status);
@@ -98,7 +102,7 @@ public class ProblemRequestController {
 			service.modifyRequest(files,entity,gson.fromJson(delImgs, String[].class));
 			status = HttpStatus.OK;
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		return new ResponseEntity<Number>(status.value(),status);
@@ -113,6 +117,7 @@ public class ProblemRequestController {
 			service.acceptExpert(expertId, requestId);
 			status = HttpStatus.OK;
 		} catch (Exception e) {
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		return new ResponseEntity<Number>(status.value(),status);
@@ -126,6 +131,7 @@ public class ProblemRequestController {
 			service.completeRequest(requestId, feedBack, rating);
 			status = HttpStatus.OK;
 		} catch (Exception e) {
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		return new ResponseEntity<Number>(status.value(),status);
@@ -149,6 +155,7 @@ public class ProblemRequestController {
 			result.setStatus(entity.getStatus().getStatus());
 			status = HttpStatus.OK;
 		} catch (Exception e) {
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		
@@ -170,7 +177,7 @@ public class ProblemRequestController {
 			}
 			status = HttpStatus.OK;
 		} catch (Exception e) {
-
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		
@@ -194,7 +201,7 @@ public class ProblemRequestController {
 			}
 			status = HttpStatus.OK;
 		} catch (Exception e) {
-
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		
@@ -216,7 +223,7 @@ public class ProblemRequestController {
 			}
 			status = HttpStatus.OK;
 		} catch (Exception e) {
-
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		
@@ -228,16 +235,17 @@ public class ProblemRequestController {
 			  produces = MediaType.IMAGE_JPEG_VALUE
 			)
 	public @ResponseBody byte[] getImageWithMediaType(@RequestParam("imgName") String imgName) {
-			 
+		byte[] result = null;
 		if(imgName != null && !imgName.isEmpty()) {
 			try {
-				service.getImage(imgName);
+				result = service.getImage(imgName); 
+				 
 			} catch (IOException e) {
-				return null;
+				LOGGER.log( Level.WARNING, e.getMessage(), e );
 				
 			}
 		}
-		return null;
+		return result;
 		
 	}
 	
@@ -257,7 +265,7 @@ public class ProblemRequestController {
 			}
 			status = HttpStatus.OK;
 		} catch (Exception e) {
-
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		
@@ -277,7 +285,7 @@ public class ProblemRequestController {
 			}
 			
 		} catch (Exception e) {
-			
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		
@@ -311,6 +319,7 @@ public class ProblemRequestController {
 			
 			status = HttpStatus.OK;
 		} catch (Exception e) {
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		return new ResponseEntity<List<ExpertProfileDTO>>(result,status);
@@ -325,7 +334,7 @@ public class ProblemRequestController {
 			status = HttpStatus.OK;
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 			status = HttpStatus.BAD_REQUEST;
 		}
 		
@@ -346,7 +355,7 @@ public class ProblemRequestController {
 
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 
 		}
 		return new ResponseEntity<CustomerProfileDTO>(dto, status);
@@ -373,7 +382,7 @@ public class ProblemRequestController {
 
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 
 		}
 		return new ResponseEntity<ExpertProfileDTO>(dto, status);
@@ -392,7 +401,7 @@ public class ProblemRequestController {
 
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 
 		}
 		return new ResponseEntity<List<Number>>(dto, status);
@@ -408,7 +417,7 @@ public class ProblemRequestController {
 			status = HttpStatus.OK;
 		} catch (Exception e) {
 			status = HttpStatus.BAD_REQUEST;
-			e.printStackTrace();
+			LOGGER.log( Level.SEVERE, e.getMessage(), e );
 		} 
 		
 		return new ResponseEntity<ExpertStatDTO>(dto,status);

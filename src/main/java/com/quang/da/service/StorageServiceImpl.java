@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class StorageServiceImpl implements StorageService {
 
-	@Value("{server.storage}")
+	@Value("${server.storage}")
 	private String filePath;
 	
 	@Override
@@ -44,9 +44,11 @@ public class StorageServiceImpl implements StorageService {
 	
 	@Override
 	public byte[] getImageByte(String name) throws IOException {
+		if(name == "null") return null;
 		File a = new File(filePath + name);
 		InputStream in;
 		in = new FileInputStream(a);
+		System.out.println(a.getName());
 		return IOUtils.toByteArray(in);
 	
 	}
