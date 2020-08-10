@@ -95,7 +95,7 @@ public interface ProblemRequestRepository extends CrudRepository<ProblemRequest,
 			+ "AND r.status.status = 'NEW' ")
 	List<ProblemRequest> findExpireRequest(@Param("endDate") Date endDate);
 	
-	@Query("SELECT new com.quang.da.customResult.ExpertStat(r.status.status,COUNT(r),SUM(r.rating)) "
+	@Query("SELECT new com.quang.da.customResult.ExpertStat(r.status.status,COUNT(r),AVG(r.rating)) "
 			+ "FROM ProblemRequest r WHERE r.expert.id = :id AND r.status.status IN :status GROUP BY r.status")
 	List<ExpertStat> getExpertStat(@Param("id") int expertId,@Param("status") StatusEnum[] statusEnum);
 	
