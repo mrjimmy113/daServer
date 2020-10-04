@@ -11,5 +11,4 @@ DaApp: This repository is used for the client-side (Android application) of this
 Link: https://github.com/mrjimmy113/daApp
 
 Full Description can be found via this link: https://docs.google.com/presentation/d/14tvsH6Jw34LzwA5ujinlJw73JUqObvr01U3GvEkfM3M/edit?usp=sharing
-
 Full Document of this project can be found via this link: https://drive.google.com/file/d/1qX7EnISJCLvNDfa0DZ13eIZ010N_Bvec/view?usp=sharing
